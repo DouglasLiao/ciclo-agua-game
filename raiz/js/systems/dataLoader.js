@@ -13,10 +13,22 @@ export async function loadGameData(url = 'jogo.json') {
   if (_loadingPromise) return _loadingPromise;
 
   _loadingPromise = (async () => {
-    const res = await fetch(url, { cache: 'no-cache' });
-    if (!res.ok) throw new Error(`Falha ao carregar ${url}: ${res.status}`);
-    const full = await res.json();
-  const filtered = validateAndFilter(full);
+    let full;
+    try {
+      const res = await fetch(url, { cache: 'no-cache' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      full = await res.json();
+    } catch (netErr) {
+      console.error('[dataLoader] Erro de rede ao buscar', url, netErr);
+      full = mockGameData(); // fallback mínimo
+    }
+    let filtered;
+    try {
+      filtered = validateAndFilter(full);
+    } catch (schemaErr) {
+      console.error('[dataLoader] Erro de schema. Usando mock mínimo.', schemaErr);
+      filtered = validateAndFilter(mockGameData());
+    }
     _cachedData = filtered;
     return filtered;
   })().finally(() => { _loadingPromise = null; });
@@ -91,5 +103,54 @@ function validateAndFilter(full) {
     acessibilidade: acc,
     drag,
     quiz
+  };
+}
+
+// Mock mínimo usado em fallback de rede/erro de schema
+function mockGameData() {
+  return {
+    ui: {
+      titulo: 'Ciclo da Água (Mock)',
+      botoes: { iniciar: 'Iniciar', reiniciar: 'Reiniciar' },
+      mensagens: {
+        carregando: 'Carregando...',
+        iniciando: 'Iniciando...',
+        falhaCarregar: 'Erro ao carregar dados',
+        pontuacao: 'Pontuação',
+        faseDrag: 'Fase de Arrastar',
+        faseQuiz: 'Fase de Quiz',
+        todosColocados: 'Todos posicionados! Avançando...',
+        parcial: 'Parcial',
+        acertosQuiz: 'Acertos Quiz',
+        resultadoTitulo: 'Resultados'
+      }
+    },
+    pontuacao: { pesoDrag: 50, pesoQuiz: 50 },
+    acessibilidade: { altoContraste: false },
+    drag: {
+      targets: ['Evaporação', 'Condensação', 'Precipitação', 'Infiltração'],
+      blocks: ['Água do solo', 'Nuvem', 'Chuva', 'Lago'],
+      map: {
+        'Água do solo': 'Infiltração',
+        'Nuvem': 'Condensação',
+        'Chuva': 'Precipitação',
+        'Lago': 'Evaporação'
+      },
+      descricoes: {
+        'Evaporação': 'Água aquece e vira vapor.',
+        'Condensação': 'Vapor esfria e forma nuvens.',
+        'Precipitação': 'Água cai em chuva.',
+        'Infiltração': 'Água penetra no solo.'
+      }
+    },
+    quiz: {
+      perguntas: [
+        {
+          texto: 'Qual processo transforma água em vapor?',
+          alternativas: ['Condensação', 'Evaporação', 'Infiltração', 'Precipitação'],
+          correta: 1
+        }
+      ]
+    }
   };
 }
