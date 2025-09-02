@@ -46,9 +46,16 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
     respostas: [],
     indice: 0,
     concluido: false,
-  debug,
-  acertosParciais: 0
+    debug,
+    acertosParciais: 0,
+    disposed: false
   };
+
+  // Recursos rastreados para limpeza
+  const keyHandlers = [];
+  const buttonHandlers = new Map(); // btn -> { over, out, up }
+  const tweens = [];
+  const timers = [];
 
   const area = { x: 480, y: 140, width: 820 };
   const questionText = scene.add.text(area.x, area.y, '', {
@@ -67,10 +74,13 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
   for (let i = 0; i < 4; i++) {
     const btn = scene.add.text(area.x, baseY + i * gapY, '---', buttonStyle(), { align: 'center' })
       .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true })
-      .on('pointerover', () => btn.setStyle({ backgroundColor: '#6ed2ff' }))
-      .on('pointerout', () => btn.setStyle({ backgroundColor: '#4ec2f0' }));
-  btn.setAlpha(0).setScale(0.95); // estado inicial para animação
+      .setInteractive({ useHandCursor: true });
+    const over = () => !state.disposed && btn.setStyle({ backgroundColor: '#6ed2ff' });
+    const out = () => !state.disposed && btn.setStyle({ backgroundColor: '#4ec2f0' });
+    btn.on('pointerover', over);
+    btn.on('pointerout', out);
+    buttonHandlers.set(btn, { over, out });
+    btn.setAlpha(0).setScale(0.95); // estado inicial para animação
     buttons.push(btn);
   }
 
@@ -101,6 +111,7 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
   const questionPrefix = getQuestionPrefix(scene);
 
   function renderPergunta() {
+    if (state.disposed) return;
     const p = state.perguntas[state.indice];
     // Reset visual base antes de aplicar texto/animar
     questionText.setAlpha(0).setScale(0.95);
@@ -110,12 +121,16 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
       const btn = buttons[idx];
       btn.setText(opt);
       btn.removeAllListeners('pointerup');
-      btn.on('pointerup', () => selecionar(idx));
+      const up = () => selecionar(idx);
+      btn.on('pointerup', up);
+      const existing = buttonHandlers.get(btn) || {};
+      existing.up = up;
+      buttonHandlers.set(btn, existing);
     });
     // Animação de entrada (fade + leve scale up) com pequeno escalonamento
     const targets = [questionText, ...buttons];
     targets.forEach((obj, i) => {
-      scene.tweens.add({
+      const tw = scene.tweens.add({
         targets: obj,
         alpha: 1,
         scale: 1,
@@ -123,13 +138,14 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
         ease: 'Quad.Out',
         delay: i * 40
       });
+      tweens.push(tw);
     });
     state.focusIndex = 0;
     updateFocusVisual();
   }
 
   function selecionar(idx) {
-    if (state.concluido || state.locked) return;
+    if (state.disposed || state.concluido || state.locked) return;
     const p = state.perguntas[state.indice];
     state.respostas[state.indice] = idx;
     state.locked = true;
@@ -161,7 +177,7 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
     // Animações de feedback leves
     const correctBtn = buttons[p.correct];
     if (correctBtn) {
-      scene.tweens.add({
+      const tw = scene.tweens.add({
         targets: correctBtn,
         scale: 1.08,
         yoyo: true,
@@ -169,12 +185,13 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
         duration: 140,
         ease: 'Sine.Out'
       });
+      tweens.push(tw);
     }
     if (!isCorrect) {
       const wrongBtn = buttons[idx];
       if (wrongBtn) {
         const baseX = wrongBtn.x;
-        scene.tweens.add({
+        const tw2 = scene.tweens.add({
           targets: wrongBtn,
           x: baseX + 5,
           yoyo: true,
@@ -183,15 +200,19 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
           ease: 'Sine.InOut',
           onComplete: () => wrongBtn.setX(baseX)
         });
+        tweens.push(tw2);
       }
     }
-    scene.time.delayedCall(800, () => {
+    const timer = scene.time.delayedCall(800, () => {
+      if (state.disposed) return;
       state.locked = false;
       avancar();
     });
+    timers.push(timer);
   }
 
   function avancar() {
+    if (state.disposed) return;
     state.indice++;
     if (state.indice >= state.perguntas.length) {
       finalizar();
@@ -202,6 +223,7 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
   }
 
   function finalizar() {
+    if (state.disposed) return;
     state.concluido = true;
     const acertos = state.perguntas.reduce((acc, p, i) => acc + (state.respostas[i] === p.correct ? 1 : 0), 0);
   if (onFinish) onFinish({ acertos }, state);
@@ -211,33 +233,70 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
 
   renderPergunta();
   // Navegação por teclado (setas/enter)
-  const keyEvents = [
-    scene.input.keyboard.on('keydown-UP', () => {
-      if (state.locked || state.concluido) return;
-      state.focusIndex = (state.focusIndex + buttons.length - 1) % buttons.length;
-      updateFocusVisual();
-    }),
-    scene.input.keyboard.on('keydown-DOWN', () => {
-      if (state.locked || state.concluido) return;
-      state.focusIndex = (state.focusIndex + 1) % buttons.length;
-      updateFocusVisual();
-    }),
-    scene.input.keyboard.on('keydown-LEFT', () => {
-      if (state.locked || state.concluido) return;
-      state.focusIndex = (state.focusIndex + buttons.length - 1) % buttons.length;
-      updateFocusVisual();
-    }),
-    scene.input.keyboard.on('keydown-RIGHT', () => {
-      if (state.locked || state.concluido) return;
-      state.focusIndex = (state.focusIndex + 1) % buttons.length;
-      updateFocusVisual();
-    }),
-    scene.input.keyboard.on('keydown-ENTER', () => {
-      if (state.locked || state.concluido) return;
-      selecionar(state.focusIndex);
-    })
-  ];
-  // Opcional: limpar handlers ao finalizar (não estritamente necessário pois a Scene sairá)
-  state.cleanup = () => keyEvents.forEach(ev => ev.removeListener && ev.removeListener());
+  function addKey(event, handler) {
+    scene.input.keyboard.on(event, handler);
+    keyHandlers.push({ event, handler });
+  }
+  addKey('keydown-UP', () => {
+    if (state.locked || state.concluido || state.disposed) return;
+    state.focusIndex = (state.focusIndex + buttons.length - 1) % buttons.length;
+    updateFocusVisual();
+  });
+  addKey('keydown-DOWN', () => {
+    if (state.locked || state.concluido || state.disposed) return;
+    state.focusIndex = (state.focusIndex + 1) % buttons.length;
+    updateFocusVisual();
+  });
+  addKey('keydown-LEFT', () => {
+    if (state.locked || state.concluido || state.disposed) return;
+    state.focusIndex = (state.focusIndex + buttons.length - 1) % buttons.length;
+    updateFocusVisual();
+  });
+  addKey('keydown-RIGHT', () => {
+    if (state.locked || state.concluido || state.disposed) return;
+    state.focusIndex = (state.focusIndex + 1) % buttons.length;
+    updateFocusVisual();
+  });
+  addKey('keydown-ENTER', () => {
+    if (state.locked || state.concluido || state.disposed) return;
+    selecionar(state.focusIndex);
+  });
+
+  function dispose() {
+    if (state.disposed) return;
+    state.disposed = true;
+    // Teclado
+    keyHandlers.forEach(({ event, handler }) => scene.input.keyboard.off(event, handler));
+    // Timers
+    timers.forEach(t => t && !t.hasDispatched && t.remove(false));
+    // Tweens
+    tweens.forEach(tw => tw && tw.stop());
+    // Botões
+    buttons.forEach(btn => {
+      // Se a cena já está destruída, evitar tocar no objeto
+      if (!btn || !btn.scene) return;
+      const h = buttonHandlers.get(btn);
+      if (h) {
+        if (h.over) btn.off && btn.off('pointerover', h.over);
+        if (h.out) btn.off && btn.off('pointerout', h.out);
+        if (h.up) btn.off && btn.off('pointerup', h.up);
+      }
+      // removeAllListeners pode tentar acessar sistemas internos; proteger
+      if (btn.removeAllListeners && btn.scene && btn.scene.sys && !btn.scene.sys.isDestroyed) {
+        try { btn.removeAllListeners(); } catch (_) { /* noop */ }
+      }
+      if (btn.disableInteractive && btn.scene && btn.scene.sys && !btn.scene.sys.isDestroyed && btn.input) {
+        try { btn.disableInteractive(); } catch (_) { /* noop */ }
+      }
+    });
+    // Texto da pergunta
+    if (questionText && questionText.removeAllListeners && questionText.scene && questionText.scene.sys && !questionText.scene.sys.isDestroyed) {
+      try { questionText.removeAllListeners(); } catch (_) { /* noop */ }
+    }
+  }
+  state.dispose = dispose;
+  scene.events.once('shutdown', dispose);
+  scene.events.once('destroy', dispose);
+
   return state;
 }
