@@ -33,12 +33,32 @@ export default class DragPhaseScene extends Phaser.Scene {
       return { label, rect };
     });
 
-    // Placeholder para futuro sistema de drag (sem lógica ainda)
-    this.dragItems = createDragSystem(this, this.blocks.map(b => ({ label: b.label })));
+    // Mapeamento correto (exemplo) label->target
+    const mapping = {
+      'Água do solo': 'Infiltração',
+      'Nuvem': 'Condensação',
+      'Chuva': 'Precipitação',
+      'Lago': 'Evaporação'
+    };
+
+    // Sistema de drag
+    this.dragState = createDragSystem(this,
+      { targets: this.targets, blocks: this.blocks, map: mapping },
+      {
+        onScoreChange: (score) => {
+          this.score = score;
+          this.scoreText.setText('Pontuação: ' + score);
+        },
+        onAllPlaced: () => {
+          // Mostrar indicador para avançar
+            this.add.text(20, 80, 'Todos posicionados! Pressione ESPAÇO.', { fontSize: '18px', color: '#ffffff' });
+        }
+      }
+    );
 
     // Tecla espaço para avançar (placeholder de validação)
     this.input.keyboard.once('keydown-SPACE', () => {
-      const result = validateDragPhase(this.dragItems);
+  const result = validateDragPhase(this.dragState.blocks);
       console.log('Resultado validação drag:', result);
       this.scene.start('QuizPhaseScene', { dragResult: result });
     });
