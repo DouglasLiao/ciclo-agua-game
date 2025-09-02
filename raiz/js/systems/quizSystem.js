@@ -12,9 +12,9 @@ export function evaluateQuiz(state) {
   return score;
 }
 
-// startQuiz(scene, perguntas, { onAnswer, onFinish })
+// startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange, debug })
 // pergunta: { text, options: [a,b,c,d], correct }
-export function startQuiz(scene, perguntas, { onAnswer, onFinish, debug = false } = {}) {
+export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange, debug = false } = {}) {
   // Copiar e opcionalmente embaralhar alternativas preservando índice correto.
   let shuffledPerguntas;
   if (debug) {
@@ -40,7 +40,8 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, debug = false 
     respostas: [],
     indice: 0,
     concluido: false,
-    debug
+  debug,
+  acertosParciais: 0
   };
 
   const area = { x: 480, y: 140, width: 820 };
@@ -102,6 +103,10 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, debug = false 
     state.locked = true;
     const isCorrect = idx === p.correct;
     if (onAnswer) onAnswer({ index: state.indice, option: idx, correct: isCorrect }, state);
+    if (isCorrect) {
+      state.acertosParciais += 1;
+      if (onScoreChange) onScoreChange({ acertos: state.acertosParciais, indice: state.indice, total: state.perguntas.length }, state);
+    }
 
     // Feedback de cores imediato:
     // - Botão correto: verde
@@ -140,7 +145,7 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, debug = false 
   function finalizar() {
     state.concluido = true;
     const acertos = state.perguntas.reduce((acc, p, i) => acc + (state.respostas[i] === p.correct ? 1 : 0), 0);
-    if (onFinish) onFinish({ acertos, total: state.perguntas.length, respostas: state.respostas }, state);
+  if (onFinish) onFinish({ acertos }, state);
     // Bloquear interação
     buttons.forEach(b => b.disableInteractive());
   }
