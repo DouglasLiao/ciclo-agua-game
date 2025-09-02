@@ -1,8 +1,11 @@
 import { createDragSystem } from '../systems/dragSystem.js';
-import { validateDragPhase } from '../systems/validation.js';
 
 export default class DragPhaseScene extends Phaser.Scene {
   constructor() { super('DragPhaseScene'); }
+
+  init(data) {
+    this.gameData = data?.gameData || null;
+  }
 
   create() {
     // HUD
@@ -42,25 +45,22 @@ export default class DragPhaseScene extends Phaser.Scene {
     };
 
     // Sistema de drag
-    this.dragState = createDragSystem(this,
+    this.dragState = createDragSystem(
+      this,
       { targets: this.targets, blocks: this.blocks, map: mapping },
       {
         onScoreChange: (score) => {
           this.score = score;
           this.scoreText.setText('Pontuação: ' + score);
         },
-        onAllPlaced: () => {
-          // Mostrar indicador para avançar
-            this.add.text(20, 80, 'Todos posicionados! Pressione ESPAÇO.', { fontSize: '18px', color: '#ffffff' });
+        onAllPlaced: (state) => {
+          // Pequeno feedback visual antes da transição
+          this.add.text(20, 80, 'Todos posicionados! Avançando...', { fontSize: '18px', color: '#ffffff' });
+          this.time.delayedCall(1000, () => {
+            this.scene.start('QuizPhaseScene', { scoreParcial: state.score, gameData: this.gameData });
+          });
         }
       }
     );
-
-    // Tecla espaço para avançar (placeholder de validação)
-    this.input.keyboard.once('keydown-SPACE', () => {
-  const result = validateDragPhase(this.dragState.blocks);
-      console.log('Resultado validação drag:', result);
-      this.scene.start('QuizPhaseScene', { dragResult: result });
-    });
   }
 }
