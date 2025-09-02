@@ -1,4 +1,3 @@
-import Phaser from 'https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.esm.js';
 import { loadGameData } from '../systems/dataLoader.js';
 
 export default class BootScene extends Phaser.Scene {

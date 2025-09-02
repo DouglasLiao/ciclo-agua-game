@@ -8,24 +8,22 @@ import DragPhaseScene from './scenes/DragPhaseScene.js';
 import QuizPhaseScene from './scenes/QuizPhaseScene.js';
 import ResultsScene from './scenes/ResultsScene.js';
 
-// CDN ESM de Phaser (alternativamente instale via npm + bundler futuramente)
-import Phaser from 'https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.esm.js';
-
 const config = {
   type: Phaser.AUTO,
   parent: 'game-container',
-  width: 960,
-  height: 540,
+  width: 800,
+  height: 600,
   backgroundColor: '#0e1e2b',
   physics: {
     default: 'arcade',
-    arcade: { debug: false }
-  },
-  scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH
+    arcade: { debug: false, gravity: { y: 0 } }
   },
   scene: [BootScene, MenuScene, DragPhaseScene, QuizPhaseScene, ResultsScene]
 };
 
-new Phaser.Game(config);
+export function initGame() {
+  return new Phaser.Game(config);
+}
+
+// Inicializa imediatamente ao carregar o módulo
+initGame();
