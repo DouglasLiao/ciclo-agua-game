@@ -14,25 +14,33 @@ export function evaluateQuiz(state) {
 
 // startQuiz(scene, perguntas, { onAnswer, onFinish })
 // pergunta: { text, options: [a,b,c,d], correct }
-export function startQuiz(scene, perguntas, { onAnswer, onFinish } = {}) {
-  // Copiar e embaralhar alternativas de cada pergunta preservando índice correto.
-  const shuffledPerguntas = perguntas.map(orig => {
-    const optionsWithIndex = orig.options.map((opt, idx) => ({ opt, originalIndex: idx }));
-    // Fisher-Yates
-    for (let i = optionsWithIndex.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [optionsWithIndex[i], optionsWithIndex[j]] = [optionsWithIndex[j], optionsWithIndex[i]];
-    }
-    const newOptions = optionsWithIndex.map(o => o.opt);
-    const newCorrect = optionsWithIndex.findIndex(o => o.originalIndex === orig.correct);
-    return { text: orig.text, options: newOptions, correct: newCorrect };
-  });
+export function startQuiz(scene, perguntas, { onAnswer, onFinish, debug = false } = {}) {
+  // Copiar e opcionalmente embaralhar alternativas preservando índice correto.
+  let shuffledPerguntas;
+  if (debug) {
+    shuffledPerguntas = perguntas.map(p => ({ ...p }));
+    // Log em modo debug para confirmar não embaralhado
+    console.debug('[quizSystem] Debug ON: perguntas não embaralhadas');
+  } else {
+    shuffledPerguntas = perguntas.map(orig => {
+      const optionsWithIndex = orig.options.map((opt, idx) => ({ opt, originalIndex: idx }));
+      // Fisher-Yates
+      for (let i = optionsWithIndex.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [optionsWithIndex[i], optionsWithIndex[j]] = [optionsWithIndex[j], optionsWithIndex[i]];
+      }
+      const newOptions = optionsWithIndex.map(o => o.opt);
+      const newCorrect = optionsWithIndex.findIndex(o => o.originalIndex === orig.correct);
+      return { text: orig.text, options: newOptions, correct: newCorrect };
+    });
+  }
 
   const state = {
     perguntas: shuffledPerguntas,
     respostas: [],
     indice: 0,
-    concluido: false
+    concluido: false,
+    debug
   };
 
   const area = { x: 480, y: 140, width: 820 };
