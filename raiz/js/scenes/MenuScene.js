@@ -1,5 +1,6 @@
 /* global Phaser */
 import { loadGameData } from '../systems/dataLoader.js';
+import { getUI } from '../systems/ui.js';
 
 export default class MenuScene extends Phaser.Scene {
   constructor() { super('MenuScene'); }
@@ -12,8 +13,11 @@ export default class MenuScene extends Phaser.Scene {
   create() {
     const { centerX, centerY } = this.cameras.main;
 
-    this.titleText = this.add.text(centerX, centerY - 60, 'Carregando...', { fontSize: '42px', color: '#ffffff' }).setOrigin(0.5);
-    this.startText = this.add.text(centerX, centerY + 10, 'Iniciar', { fontSize: '32px', color: '#555555' })
+  const gd = this.initialGameData; // pode estar presente do BootScene
+  const loadingLabel = getUI(gd, 'menu.loading', 'Carregando...');
+  const startBtnLabel = getUI(gd, 'menu.startButton', 'Iniciar');
+  this.titleText = this.add.text(centerX, centerY - 60, loadingLabel, { fontSize: '42px', color: '#ffffff' }).setOrigin(0.5);
+  this.startText = this.add.text(centerX, centerY + 10, startBtnLabel, { fontSize: '32px', color: '#555555' })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: false });
 
@@ -27,8 +31,8 @@ export default class MenuScene extends Phaser.Scene {
     const attemptStart = async () => {
       if (!this.startEnabled || this.transitioning) return;
       this.transitioning = true;
-      this.startText.setColor('#cccccc');
-      this.startText.text = 'Iniciando...';
+  this.startText.setColor('#cccccc');
+  this.startText.text = getUI(this.gameData || this.initialGameData, 'menu.starting', 'Iniciando...');
       try {
         if (!this.gameDataPromise) {
           this.gameDataPromise = loadGameData('jogo.json').catch(e => { throw e; });
@@ -36,9 +40,9 @@ export default class MenuScene extends Phaser.Scene {
         const data = await this.gameDataPromise;
         this.scene.start('DragPhaseScene', { gameData: data });
       } catch (e) {
-        console.error('[MenuScene] Erro ao iniciar (dados):', e);
-        this.startText.setColor('#ff5555');
-        this.startText.text = 'Falha - tentar?';
+  console.error('[MenuScene] Erro ao iniciar (dados):', e);
+  this.startText.setColor('#ff5555');
+  this.startText.text = getUI(this.gameData, 'menu.startFailure', 'Falha - tentar?');
         this.transitioning = false;
       }
     };
@@ -52,14 +56,15 @@ export default class MenuScene extends Phaser.Scene {
     this.gameDataPromise = loadGameData('jogo.json')
       .then(data => {
         this.gameData = data;
-        this.titleText.text = data.nome || 'Ciclo da Água';
+        this.titleText.text = getUI(data, 'menu.title', data.nome || 'Ciclo da Água');
+        this.startText.setText(getUI(data, 'menu.startButton', 'Iniciar'));
         enableStart();
       })
       .catch(e => {
         console.error('[MenuScene] Falha ao carregar jogo.json', e);
-        this.titleText.text = 'Erro ao carregar dados';
+        this.titleText.text = getUI(this.initialGameData, 'menu.loadErrorTitle', 'Erro ao carregar dados');
         this.startText.setColor('#ff5555');
-        this.startText.text = 'Recarregar';
+        this.startText.text = getUI(this.initialGameData, 'menu.reloadButton', 'Recarregar');
         this.startText.on('pointerup', () => {
           this.startText.removeAllListeners('pointerup');
           this.scene.restart();

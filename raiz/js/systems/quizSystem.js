@@ -89,9 +89,17 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
     });
   }
 
+  function getQuestionPrefix(scene) {
+    const gd = scene?.gameData;
+    const qPrefix = gd?.ui?.questionPrefix;
+    return qPrefix !== undefined ? qPrefix : 'Q';
+  }
+
+  const questionPrefix = getQuestionPrefix(scene);
+
   function renderPergunta() {
   const p = state.perguntas[state.indice];
-    questionText.setText(`Q${state.indice + 1}: ${p.text}`);
+    questionText.setText(`${questionPrefix}${state.indice + 1}: ${p.text}`);
     p.options.forEach((opt, idx) => {
       const btn = buttons[idx];
       btn.setText(opt);
