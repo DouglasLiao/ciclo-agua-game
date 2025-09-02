@@ -30,10 +30,19 @@ export default class QuizPhaseScene extends Phaser.Scene {
       },
       onFinish: (res) => {
         const scoreQuiz = computeScoreQuiz(res);
-        const totalScore = this.scoreParcial + scoreQuiz;
-  // Tocar som de conclusão se carregado (opcional)
-  try { this.sound.play('quiz_complete'); } catch (_) { /* silencioso */ }
-  this.scene.start('ResultsScene', { scoreTotal, gameData: this.gameData });
+        const scoreTotal = this.scoreParcial + scoreQuiz;
+        // Tocar som somente se asset carregado (evita 404 se não existir)
+        if (this.sound && this.cache.audio.exists('quiz_complete')) {
+          try {
+            const s = this.sound.play('quiz_complete');
+            if (!s) console.warn('[QuizPhaseScene] Falha ao iniciar som quiz_complete');
+          } catch (e) {
+            console.warn('[QuizPhaseScene] Erro ao tocar som quiz_complete', e);
+          }
+        } else {
+          // console.debug('[QuizPhaseScene] Som quiz_complete ausente ou não carregado');
+        }
+        this.scene.start('ResultsScene', { scoreTotal, gameData: this.gameData });
       }
     });
   }
