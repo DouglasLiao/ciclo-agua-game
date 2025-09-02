@@ -1,20 +1,28 @@
-import { presentQuiz, evaluateQuiz } from '../systems/quizSystem.js';
+import { startQuiz } from '../systems/quizSystem.js';
 
 export default class QuizPhaseScene extends Phaser.Scene {
   constructor() { super('QuizPhaseScene'); }
 
   init(data) {
-    this.dragResult = data.dragResult;
+    this.scoreParcial = data.scoreParcial || 0;
+    this.gameData = data.gameData || null;
   }
 
   create() {
-    this.add.text(20, 20, 'Fase de Quiz (protótipo)', { fontSize: '20px', color: '#ffffff' });
+    this.add.text(20, 20, 'Fase de Quiz', { fontSize: '20px', color: '#ffffff' });
+    this.add.text(20, 48, `Parcial: ${this.scoreParcial}`, { fontSize: '18px', color: '#4ec2f0' });
 
-    this.quizState = presentQuiz(this, []); // TODO: passar perguntas reais
+    const perguntasDemo = [
+      { text: 'Processo em que a água retorna à atmosfera em forma de vapor.', options: ['Infiltração', 'Evaporação', 'Condensação', 'Precipitação'], correct: 1 },
+      { text: 'Formação de nuvens a partir do vapor de água.', options: ['Condensação', 'Transpiração', 'Infiltração', 'Evaporação'], correct: 0 },
+      { text: 'Queda de água para a superfície em forma de chuva.', options: ['Precipitação', 'Condensação', 'Evaporação', 'Sublimação'], correct: 0 }
+    ];
 
-    this.input.keyboard.once('keydown-ENTER', () => {
-      const score = evaluateQuiz(this.quizState);
-      this.scene.start('ResultsScene', { score });
+    startQuiz(this, perguntasDemo, {
+      onFinish: (res) => {
+        const totalScore = this.scoreParcial + res.acertos;
+        this.scene.start('ResultsScene', { score: totalScore, detalhesQuiz: res, gameData: this.gameData });
+      }
     });
   }
 }
