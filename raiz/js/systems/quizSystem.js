@@ -15,8 +15,21 @@ export function evaluateQuiz(state) {
 // startQuiz(scene, perguntas, { onAnswer, onFinish })
 // pergunta: { text, options: [a,b,c,d], correct }
 export function startQuiz(scene, perguntas, { onAnswer, onFinish } = {}) {
+  // Copiar e embaralhar alternativas de cada pergunta preservando índice correto.
+  const shuffledPerguntas = perguntas.map(orig => {
+    const optionsWithIndex = orig.options.map((opt, idx) => ({ opt, originalIndex: idx }));
+    // Fisher-Yates
+    for (let i = optionsWithIndex.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [optionsWithIndex[i], optionsWithIndex[j]] = [optionsWithIndex[j], optionsWithIndex[i]];
+    }
+    const newOptions = optionsWithIndex.map(o => o.opt);
+    const newCorrect = optionsWithIndex.findIndex(o => o.originalIndex === orig.correct);
+    return { text: orig.text, options: newOptions, correct: newCorrect };
+  });
+
   const state = {
-    perguntas,
+    perguntas: shuffledPerguntas,
     respostas: [],
     indice: 0,
     concluido: false
@@ -44,7 +57,7 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish } = {}) {
   }
 
   function renderPergunta() {
-    const p = state.perguntas[state.indice];
+  const p = state.perguntas[state.indice];
     questionText.setText(`Q${state.indice + 1}: ${p.text}`);
     p.options.forEach((opt, idx) => {
       const btn = buttons[idx];
