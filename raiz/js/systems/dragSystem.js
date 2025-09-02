@@ -90,13 +90,26 @@ export function createDragSystem(scene, { targets, blocks, map }, { onScoreChang
         return;
       }
     }
-    // Caso incorreto ou sem alvo: retornar
+    // Caso incorreto ou sem alvo: shake simples + retorno à origem
+    const origin = blk.originalPos;
+    const originalX = gameObject.x;
+    const shakeAmp = 12;
     scene.tweens.add({
       targets: gameObject,
-      x: blk.originalPos.x,
-      y: blk.originalPos.y,
-      duration: 200,
-      ease: 'Sine.easeInOut'
+      x: originalX + shakeAmp,
+      duration: 60,
+      ease: 'Sine.easeInOut',
+      yoyo: true,
+      repeat: 2,
+      onComplete: () => {
+        scene.tweens.add({
+          targets: gameObject,
+          x: origin.x,
+          y: origin.y,
+            duration: 200,
+            ease: 'Sine.easeOut'
+        });
+      }
     });
   });
 
