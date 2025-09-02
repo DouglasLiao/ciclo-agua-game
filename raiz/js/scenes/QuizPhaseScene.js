@@ -31,13 +31,9 @@ export default class QuizPhaseScene extends Phaser.Scene {
       onFinish: (res) => {
         const scoreQuiz = computeScoreQuiz(res);
         const totalScore = this.scoreParcial + scoreQuiz;
-        this.scene.start('ResultsScene', {
-          score: totalScore,
-          scoreParcial: this.scoreParcial,
-            scoreQuiz,
-          detalhesQuiz: res,
-          gameData: this.gameData
-        });
+  // Tocar som de conclusão se carregado (opcional)
+  try { this.sound.play('quiz_complete'); } catch (_) { /* silencioso */ }
+  this.scene.start('ResultsScene', { scoreTotal, gameData: this.gameData });
       }
     });
   }

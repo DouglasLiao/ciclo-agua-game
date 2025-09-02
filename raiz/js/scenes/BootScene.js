@@ -8,6 +8,8 @@ export default class BootScene extends Phaser.Scene {
   preload() {
     // Preload mínimo. Adicione aqui assets críticos (logo, atlas, fontes, etc.).
     // this.load.image('logo', 'assets/logo.png');
+  // Som opcional de conclusão do quiz (coloque o arquivo em assets/sfx/complete.mp3)
+  this.load.audio('quiz_complete', 'assets/sfx/complete.mp3');
 
     // Log de erros de carregamento de assets.
     this.load.on('loaderror', (fileObj) => {
