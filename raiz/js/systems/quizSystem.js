@@ -64,6 +64,24 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, debug = false 
     buttons.push(btn);
   }
 
+  const focusColors = {
+    default: '#4ec2f0',
+    hover: '#6ed2ff',
+    focus: '#ffcc4d'
+  };
+  state.focusIndex = 0;
+
+  function updateFocusVisual() {
+    if (state.locked || state.concluido) return; // não alterar após resposta
+    buttons.forEach((b, i) => {
+      if (i === state.focusIndex) {
+        b.setStyle({ backgroundColor: focusColors.focus });
+      } else {
+        b.setStyle({ backgroundColor: focusColors.default });
+      }
+    });
+  }
+
   function renderPergunta() {
   const p = state.perguntas[state.indice];
     questionText.setText(`Q${state.indice + 1}: ${p.text}`);
@@ -73,6 +91,8 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, debug = false 
       btn.removeAllListeners('pointerup');
       btn.on('pointerup', () => selecionar(idx));
     });
+  state.focusIndex = 0;
+  updateFocusVisual();
   }
 
   function selecionar(idx) {
@@ -91,6 +111,7 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, debug = false 
     const COLOR_WRONG = '#b33939';
     const COLOR_DEFAULT = '#4ec2f0';
 
+    // Mostrar feedback imediato e seguir independente de acerto
     buttons.forEach((b, i) => {
       if (i === p.correct) {
         b.setStyle({ backgroundColor: COLOR_CORRECT });
@@ -99,10 +120,7 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, debug = false 
       } else {
         b.setStyle({ backgroundColor: COLOR_DEFAULT });
       }
-      b.disableInteractive();
     });
-
-    // Avança após ~800ms para permitir leitura do feedback
     scene.time.delayedCall(800, () => {
       state.locked = false;
       avancar();
@@ -128,5 +146,34 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, debug = false 
   }
 
   renderPergunta();
+  // Navegação por teclado (setas/enter)
+  const keyEvents = [
+    scene.input.keyboard.on('keydown-UP', () => {
+      if (state.locked || state.concluido) return;
+      state.focusIndex = (state.focusIndex + buttons.length - 1) % buttons.length;
+      updateFocusVisual();
+    }),
+    scene.input.keyboard.on('keydown-DOWN', () => {
+      if (state.locked || state.concluido) return;
+      state.focusIndex = (state.focusIndex + 1) % buttons.length;
+      updateFocusVisual();
+    }),
+    scene.input.keyboard.on('keydown-LEFT', () => {
+      if (state.locked || state.concluido) return;
+      state.focusIndex = (state.focusIndex + buttons.length - 1) % buttons.length;
+      updateFocusVisual();
+    }),
+    scene.input.keyboard.on('keydown-RIGHT', () => {
+      if (state.locked || state.concluido) return;
+      state.focusIndex = (state.focusIndex + 1) % buttons.length;
+      updateFocusVisual();
+    }),
+    scene.input.keyboard.on('keydown-ENTER', () => {
+      if (state.locked || state.concluido) return;
+      selecionar(state.focusIndex);
+    })
+  ];
+  // Opcional: limpar handlers ao finalizar (não estritamente necessário pois a Scene sairá)
+  state.cleanup = () => keyEvents.forEach(ev => ev.removeListener && ev.removeListener());
   return state;
 }
