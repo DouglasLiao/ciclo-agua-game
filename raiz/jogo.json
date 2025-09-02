@@ -1,7 +1,75 @@
 {
-  "nome": "Ciclo da Água",
-  "versao": "0.1.0",
-  "descricao": "Jogo educativo sobre o ciclo da água feito em Phaser 3.",
-  "autor": "",
-  "licenca": "MIT"
+  "ui": {
+    "titulo": "Ciclo da Água",
+    "botoes": {
+      "iniciar": "Iniciar",
+      "reiniciar": "Reiniciar",
+      "voltarMenu": "Menu",
+      "tentarNovamente": "Tentar Novamente"
+    },
+    "mensagens": {
+      "carregando": "Carregando...",
+      "iniciando": "Iniciando...",
+      "falhaCarregar": "Erro ao carregar dados",
+      "pontuacao": "Pontuação",
+      "faseDrag": "Fase de Arrastar",
+      "faseQuiz": "Fase de Quiz",
+      "todosColocados": "Todos posicionados! Avançando...",
+      "parcial": "Parcial",
+      "acertosQuiz": "Acertos Quiz",
+      "resultadoTitulo": "Resultados"
+    }
+  },
+  "pontuacao": {
+    "pesoDrag": 50,
+    "pesoQuiz": 50
+  },
+  "acessibilidade": {
+    "altoContraste": false
+  },
+  "drag": {
+    "targets": ["Evaporação", "Condensação", "Precipitação", "Infiltração"],
+    "blocks": ["Água do solo", "Nuvem", "Chuva", "Lago"],
+    "map": {
+      "Água do solo": "Infiltração",
+      "Nuvem": "Condensação",
+      "Chuva": "Precipitação",
+      "Lago": "Evaporação"
+    },
+    "descricoes": {
+      "Evaporação": "A água presente na superfície dos rios, lagos e oceanos se aquece com a luz do sol e se transforma em vapor, subindo para a atmosfera.",
+      "Condensação": "O vapor de água sobe e, ao encontrar camadas frias da atmosfera, se resfria, formando as nuvens.",
+      "Precipitação": "Quando as nuvens estão carregadas de vapor, a água retorna à superfície da Terra em forma de chuva, neve ou granizo.",
+      "Infiltração": "Parte da água da precipitação penetra no solo, abastecendo os lençóis freáticos e alimentando nascentes e aquíferos."
+    }
+  },
+  "quiz": {
+    "perguntas": [
+      {
+        "texto": "Qual é a etapa em que a água se transforma em vapor?",
+        "alternativas": ["Condensação", "Precipitação", "Evaporação", "Infiltração"],
+        "correta": 2
+      },
+      {
+        "texto": "O que acontece na condensação?",
+        "alternativas": ["Formação das nuvens", "Queda da chuva", "Evaporação da água", "Absorção pelo solo"],
+        "correta": 0
+      },
+      {
+        "texto": "Qual etapa devolve a água para a superfície em forma de chuva?",
+        "alternativas": ["Condensação", "Precipitação", "Infiltração", "Evaporação"],
+        "correta": 1
+      },
+      {
+        "texto": "Qual processo abastece os lençóis freáticos?",
+        "alternativas": ["Infiltração", "Precipitação", "Condensação", "Evaporação"],
+        "correta": 0
+      },
+      {
+        "texto": "Qual desses fenômenos NÃO faz parte do ciclo da água?",
+        "alternativas": ["Evaporação", "Filtração", "Condensação", "Precipitação"],
+        "correta": 1
+      }
+    ]
+  }
 }
