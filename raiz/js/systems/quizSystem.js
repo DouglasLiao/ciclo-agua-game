@@ -54,6 +54,8 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
   const questionText = scene.add.text(area.x, area.y, '', {
     fontSize: '28px', color: '#ffffff', wordWrap: { width: area.width }
   }).setOrigin(0.5, 0);
+  // Preparar para animações de entrada
+  questionText.setAlpha(0).setScale(0.95);
 
   const buttonStyle = (enabled = true) => ({
     fontSize: '22px', color: enabled ? '#222222' : '#555555', backgroundColor: '#4ec2f0', padding: { x: 14, y: 8 }
@@ -68,6 +70,7 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
       .setInteractive({ useHandCursor: true })
       .on('pointerover', () => btn.setStyle({ backgroundColor: '#6ed2ff' }))
       .on('pointerout', () => btn.setStyle({ backgroundColor: '#4ec2f0' }));
+  btn.setAlpha(0).setScale(0.95); // estado inicial para animação
     buttons.push(btn);
   }
 
@@ -98,7 +101,10 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
   const questionPrefix = getQuestionPrefix(scene);
 
   function renderPergunta() {
-  const p = state.perguntas[state.indice];
+    const p = state.perguntas[state.indice];
+    // Reset visual base antes de aplicar texto/animar
+    questionText.setAlpha(0).setScale(0.95);
+    buttons.forEach(b => b.setAlpha(0).setScale(0.95));
     questionText.setText(`${questionPrefix}${state.indice + 1}: ${p.text}`);
     p.options.forEach((opt, idx) => {
       const btn = buttons[idx];
@@ -106,8 +112,20 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
       btn.removeAllListeners('pointerup');
       btn.on('pointerup', () => selecionar(idx));
     });
-  state.focusIndex = 0;
-  updateFocusVisual();
+    // Animação de entrada (fade + leve scale up) com pequeno escalonamento
+    const targets = [questionText, ...buttons];
+    targets.forEach((obj, i) => {
+      scene.tweens.add({
+        targets: obj,
+        alpha: 1,
+        scale: 1,
+        duration: 220,
+        ease: 'Quad.Out',
+        delay: i * 40
+      });
+    });
+    state.focusIndex = 0;
+    updateFocusVisual();
   }
 
   function selecionar(idx) {
@@ -140,6 +158,33 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
         b.setStyle({ backgroundColor: COLOR_DEFAULT });
       }
     });
+    // Animações de feedback leves
+    const correctBtn = buttons[p.correct];
+    if (correctBtn) {
+      scene.tweens.add({
+        targets: correctBtn,
+        scale: 1.08,
+        yoyo: true,
+        repeat: 1,
+        duration: 140,
+        ease: 'Sine.Out'
+      });
+    }
+    if (!isCorrect) {
+      const wrongBtn = buttons[idx];
+      if (wrongBtn) {
+        const baseX = wrongBtn.x;
+        scene.tweens.add({
+          targets: wrongBtn,
+          x: baseX + 5,
+          yoyo: true,
+          repeat: 3,
+          duration: 50,
+          ease: 'Sine.InOut',
+          onComplete: () => wrongBtn.setX(baseX)
+        });
+      }
+    }
     scene.time.delayedCall(800, () => {
       state.locked = false;
       avancar();
