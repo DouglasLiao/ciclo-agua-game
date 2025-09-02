@@ -76,13 +76,37 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, debug = false 
   }
 
   function selecionar(idx) {
-    if (state.concluido) return;
+    if (state.concluido || state.locked) return;
     const p = state.perguntas[state.indice];
     state.respostas[state.indice] = idx;
-    if (onAnswer) onAnswer({ index: state.indice, option: idx, correct: idx === p.correct }, state);
-    // highlight
-    buttons.forEach((b, i) => b.setStyle({ backgroundColor: i === idx ? '#1e7d4e' : '#4ec2f0' }));
-    scene.time.delayedCall(400, avancar);
+    state.locked = true;
+    const isCorrect = idx === p.correct;
+    if (onAnswer) onAnswer({ index: state.indice, option: idx, correct: isCorrect }, state);
+
+    // Feedback de cores imediato:
+    // - Botão correto: verde
+    // - Botão escolhido errado (se houver): vermelho
+    // - Demais: manter azul padrão
+    const COLOR_CORRECT = '#1e7d4e';
+    const COLOR_WRONG = '#b33939';
+    const COLOR_DEFAULT = '#4ec2f0';
+
+    buttons.forEach((b, i) => {
+      if (i === p.correct) {
+        b.setStyle({ backgroundColor: COLOR_CORRECT });
+      } else if (i === idx && !isCorrect) {
+        b.setStyle({ backgroundColor: COLOR_WRONG });
+      } else {
+        b.setStyle({ backgroundColor: COLOR_DEFAULT });
+      }
+      b.disableInteractive();
+    });
+
+    // Avança após ~800ms para permitir leitura do feedback
+    scene.time.delayedCall(800, () => {
+      state.locked = false;
+      avancar();
+    });
   }
 
   function avancar() {
