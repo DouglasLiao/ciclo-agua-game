@@ -27,9 +27,9 @@ export default class BootScene extends Phaser.Scene {
       console.error('[BootScene] Falha ao carregar jogo.json', e);
       this.gameData = {};
     }
-    // Garantir decodificação de áudio antes de iniciar (não bloqueia se falhar)
+    // Removido decodeAudio manual: Phaser já decodifica automaticamente quando necessário.
     if (this.sound && this.cache.audio.exists('quiz_complete')) {
-      this.sound.decodeAudio('quiz_complete');
+      console.debug('[BootScene] Áudio quiz_complete carregado (decodificação automática)');
     }
     this.scene.start('MenuScene', { gameData: this.gameData });
   }
