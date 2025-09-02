@@ -12,6 +12,12 @@ export function evaluateQuiz(state) {
   return score;
 }
 
+// Função utilitária para calcular score final do quiz a partir do resultado ({ acertos })
+export function computeScoreQuiz(result) {
+  if (!result || typeof result.acertos !== 'number') return 0;
+  return result.acertos; // Futuro: aplicar pesos ou normalização
+}
+
 // startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange, debug })
 // pergunta: { text, options: [a,b,c,d], correct }
 export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange, debug = false } = {}) {

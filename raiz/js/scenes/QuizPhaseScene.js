@@ -1,4 +1,4 @@
-import { startQuiz } from '../systems/quizSystem.js';
+import { startQuiz, computeScoreQuiz } from '../systems/quizSystem.js';
 
 export default class QuizPhaseScene extends Phaser.Scene {
   constructor() { super('QuizPhaseScene'); }
@@ -24,8 +24,15 @@ export default class QuizPhaseScene extends Phaser.Scene {
         this.quizScoreText.setText(`Acertos Quiz: ${acertos}`);
       },
       onFinish: (res) => {
-        const totalScore = this.scoreParcial + res.acertos;
-        this.scene.start('ResultsScene', { score: totalScore, detalhesQuiz: res, gameData: this.gameData });
+        const scoreQuiz = computeScoreQuiz(res);
+        const totalScore = this.scoreParcial + scoreQuiz;
+        this.scene.start('ResultsScene', {
+          score: totalScore,
+          scoreParcial: this.scoreParcial,
+            scoreQuiz,
+          detalhesQuiz: res,
+          gameData: this.gameData
+        });
       }
     });
   }
