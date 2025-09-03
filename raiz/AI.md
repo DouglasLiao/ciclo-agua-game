@@ -50,6 +50,9 @@ Ou acrescentar co‑autor no trailer se aplicável.
 | `tests/*.test.js` | Casos de validação | Conferido alcance + falsos positivos |
 | `Dockerfile` | Boilerplate base | Verificado camadas mínimas |
 | `Makefile` | Alvos comuns | Testado comandos principais |
+| `js/scenes/DragPhaseScene.js` (HUD score reativada) | Inserção callback + texto dinâmico | Verificado atualização em acerto/erro |
+| `js/systems/dragSystem.js` (onScoreChange meta) | Propagação meta `{ correct, error }` | Confirmado não afeta lógica principal |
+| `js/systems/quizSystem.js` (shuffle perguntas + alternativas) | Embaralhamento Fisher-Yates | Validado preservação índice correto |
 
 ## 5. Fluxo de Revisão
 
@@ -126,4 +129,4 @@ Manter somente sugestões compatíveis com MIT; evitar copiar trechos externos n
 Verificar que exemplos de perguntas são originais ou suficientemente genéricos.
 
 ---
-Última atualização sincronizada com commit de adição de Docker/Makefile.
+Última atualização: 2025-09-03 – adicionados registros de HUD de pontuação no drag e embaralhamento de perguntas/alternativas do quiz.
