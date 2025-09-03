@@ -28,21 +28,30 @@ export function computeScoreDrag(acertosDrag, totalDrag, pesoDrag = 50) {
 
 // startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange, debug })
 // Aceita formato interno { text, options, correct } ou JSON { texto, alternativas, correta }.
-export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange, debug = false } = {}) {
+export function startQuiz(
+  scene,
+  perguntas,
+  { onAnswer, onFinish, onScoreChange, debug = false } = {}
+) {
   if (!Array.isArray(perguntas) || !perguntas.length) {
-  // Nenhuma pergunta disponível
+    // Nenhuma pergunta disponível
     if (onFinish) onFinish({ acertos: 0 }, { perguntas: [], respostas: [], concluido: true })
     return { perguntas: [], respostas: [], concluido: true }
   }
   const normalizadas = perguntas.map((p, i) => {
-    const text = p.text !== undefined ? p.text : (p.texto !== undefined ? p.texto : `Pergunta ${i + 1}`)
-    const options = Array.isArray(p.options) ? p.options : (Array.isArray(p.alternativas) ? p.alternativas : [])
-    let correct = (p.correct !== undefined ? p.correct : p.correta)
+    const text =
+      p.text !== undefined ? p.text : p.texto !== undefined ? p.texto : `Pergunta ${i + 1}`
+    const options = Array.isArray(p.options)
+      ? p.options
+      : Array.isArray(p.alternativas)
+        ? p.alternativas
+        : []
+    let correct = p.correct !== undefined ? p.correct : p.correta
     if (!Array.isArray(options) || options.length < 2) {
-  // aviso: alternativas insuficientes
+      // aviso: alternativas insuficientes
     }
     if (typeof correct !== 'number' || correct < 0 || correct >= options.length) {
-  // índice incorreto ajustado para 0
+      // índice incorreto ajustado para 0
       correct = 0
     }
     return { text, options, correct }
@@ -50,23 +59,23 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
   // Embaralha a ordem das perguntas (mantendo índice da correta) e também as alternativas de cada uma.
   let shuffledPerguntas
   if (debug) {
-    shuffledPerguntas = normalizadas.map(p => ({ ...p }))
+    shuffledPerguntas = normalizadas.map((p) => ({ ...p }))
   } else {
     // Shuffle de perguntas (Fisher-Yates)
     const questionsShuffled = [...normalizadas]
     for (let i = questionsShuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [questionsShuffled[i], questionsShuffled[j]] = [questionsShuffled[j], questionsShuffled[i]]
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[questionsShuffled[i], questionsShuffled[j]] = [questionsShuffled[j], questionsShuffled[i]]
     }
     // Agora shuffle de alternativas por pergunta
-    shuffledPerguntas = questionsShuffled.map(orig => {
+    shuffledPerguntas = questionsShuffled.map((orig) => {
       const optionsWithIndex = orig.options.map((opt, idx) => ({ opt, originalIndex: idx }))
       for (let i = optionsWithIndex.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [optionsWithIndex[i], optionsWithIndex[j]] = [optionsWithIndex[j], optionsWithIndex[i]]
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[optionsWithIndex[i], optionsWithIndex[j]] = [optionsWithIndex[j], optionsWithIndex[i]]
       }
-      const newOptions = optionsWithIndex.map(o => o.opt)
-      const newCorrect = optionsWithIndex.findIndex(o => o.originalIndex === orig.correct)
+      const newOptions = optionsWithIndex.map((o) => o.opt)
+      const newCorrect = optionsWithIndex.findIndex((o) => o.originalIndex === orig.correct)
       return { text: orig.text, options: newOptions, correct: newCorrect }
     })
   }
@@ -88,21 +97,29 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
   const timers = []
 
   const area = { x: 480, y: 140, width: 820 }
-  const questionText = scene.add.text(area.x, area.y, '', {
-    fontSize: '28px', color: '#ffffff', wordWrap: { width: area.width }
-  }).setOrigin(0.5, 0)
+  const questionText = scene.add
+    .text(area.x, area.y, '', {
+      fontSize: '28px',
+      color: '#ffffff',
+      wordWrap: { width: area.width }
+    })
+    .setOrigin(0.5, 0)
   // Preparar para animações de entrada
   questionText.setAlpha(0).setScale(0.95)
 
   const buttonStyle = (enabled = true) => ({
-    fontSize: '22px', color: enabled ? '#222222' : '#555555', backgroundColor: '#4ec2f0', padding: { x: 14, y: 8 }
+    fontSize: '22px',
+    color: enabled ? '#222222' : '#555555',
+    backgroundColor: '#4ec2f0',
+    padding: { x: 14, y: 8 }
   })
 
   const buttons = []
   const baseY = 280
   const gapY = 70
   for (let i = 0; i < 4; i++) {
-    const btn = scene.add.text(area.x, baseY + i * gapY, '---', buttonStyle(), { align: 'center' })
+    const btn = scene.add
+      .text(area.x, baseY + i * gapY, '---', buttonStyle(), { align: 'center' })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
     const over = () => !state.disposed && btn.setStyle({ backgroundColor: '#6ed2ff' })
@@ -145,7 +162,7 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
     const p = state.perguntas[state.indice]
     // Reset visual base antes de aplicar texto/animar
     questionText.setAlpha(0).setScale(0.95)
-    buttons.forEach(b => b.setAlpha(0).setScale(0.95))
+    buttons.forEach((b) => b.setAlpha(0).setScale(0.95))
     questionText.setText(`${questionPrefix}${state.indice + 1}: ${p.text}`)
     p.options.forEach((opt, idx) => {
       const btn = buttons[idx]
@@ -183,17 +200,22 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
     if (onAnswer) onAnswer({ index: state.indice, option: idx, correct: isCorrect }, state)
     if (isCorrect) {
       state.acertosParciais += 1
-      if (onScoreChange) onScoreChange({ acertos: state.acertosParciais, indice: state.indice, total: state.perguntas.length }, state)
+      if (onScoreChange)
+        onScoreChange(
+          { acertos: state.acertosParciais, indice: state.indice, total: state.perguntas.length },
+          state
+        )
     }
 
     // Feedback de cores imediato:
     // - Botão correto: verde
     // - Botão escolhido errado (se houver): vermelho
     // - Demais: manter azul padrão
-  const highContrast = (typeof document !== 'undefined') && document.body.classList.contains('alto-contraste')
-  const COLOR_CORRECT = highContrast ? '#00aa00' : '#1e7d4e' // verde mais claro para contraste AA
-  const COLOR_WRONG = highContrast ? '#ff2222' : '#b33939'   // vermelho mais vivo
-  const COLOR_DEFAULT = highContrast ? '#0088ff' : '#4ec2f0'
+    const highContrast =
+      typeof document !== 'undefined' && document.body.classList.contains('alto-contraste')
+    const COLOR_CORRECT = highContrast ? '#00aa00' : '#1e7d4e' // verde mais claro para contraste AA
+    const COLOR_WRONG = highContrast ? '#ff2222' : '#b33939' // vermelho mais vivo
+    const COLOR_DEFAULT = highContrast ? '#0088ff' : '#4ec2f0'
 
     // Mostrar feedback imediato e seguir independente de acerto
     buttons.forEach((b, i) => {
@@ -248,7 +270,7 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
     if (state.indice >= state.perguntas.length) {
       finalizar()
     } else {
-      buttons.forEach(b => b.setStyle({ backgroundColor: '#4ec2f0' }))
+      buttons.forEach((b) => b.setStyle({ backgroundColor: '#4ec2f0' }))
       renderPergunta()
     }
   }
@@ -256,10 +278,13 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
   function finalizar() {
     if (state.disposed) return
     state.concluido = true
-    const acertos = state.perguntas.reduce((acc, p, i) => acc + (state.respostas[i] === p.correct ? 1 : 0), 0)
-  if (onFinish) onFinish({ acertos }, state)
+    const acertos = state.perguntas.reduce(
+      (acc, p, i) => acc + (state.respostas[i] === p.correct ? 1 : 0),
+      0
+    )
+    if (onFinish) onFinish({ acertos }, state)
     // Bloquear interação
-    buttons.forEach(b => b.disableInteractive())
+    buttons.forEach((b) => b.disableInteractive())
   }
 
   renderPergunta()
@@ -299,11 +324,11 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
     // Teclado
     keyHandlers.forEach(({ event, handler }) => scene.input.keyboard.off(event, handler))
     // Timers
-    timers.forEach(t => t && !t.hasDispatched && t.remove(false))
+    timers.forEach((t) => t && !t.hasDispatched && t.remove(false))
     // Tweens
-    tweens.forEach(tw => tw && tw.stop())
+    tweens.forEach((tw) => tw && tw.stop())
     // Botões
-    buttons.forEach(btn => {
+    buttons.forEach((btn) => {
       // Se a cena já está destruída, evitar tocar no objeto
       if (!btn || !btn.scene) return
       const h = buttonHandlers.get(btn)
@@ -314,15 +339,39 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
       }
       // removeAllListeners pode tentar acessar sistemas internos; proteger
       if (btn.removeAllListeners && btn.scene && btn.scene.sys && !btn.scene.sys.isDestroyed) {
-        try { btn.removeAllListeners() } catch (_) { /* noop */ }
+        try {
+          btn.removeAllListeners()
+        } catch (_) {
+          /* noop */
+        }
       }
-      if (btn.disableInteractive && btn.scene && btn.scene.sys && !btn.scene.sys.isDestroyed && btn.input) {
-        try { btn.disableInteractive() } catch (_) { /* noop */ }
+      if (
+        btn.disableInteractive &&
+        btn.scene &&
+        btn.scene.sys &&
+        !btn.scene.sys.isDestroyed &&
+        btn.input
+      ) {
+        try {
+          btn.disableInteractive()
+        } catch (_) {
+          /* noop */
+        }
       }
     })
     // Texto da pergunta
-    if (questionText && questionText.removeAllListeners && questionText.scene && questionText.scene.sys && !questionText.scene.sys.isDestroyed) {
-      try { questionText.removeAllListeners() } catch (_) { /* noop */ }
+    if (
+      questionText &&
+      questionText.removeAllListeners &&
+      questionText.scene &&
+      questionText.scene.sys &&
+      !questionText.scene.sys.isDestroyed
+    ) {
+      try {
+        questionText.removeAllListeners()
+      } catch (_) {
+        /* noop */
+      }
     }
   }
   state.dispose = dispose

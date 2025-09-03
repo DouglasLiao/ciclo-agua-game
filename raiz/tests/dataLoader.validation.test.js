@@ -3,22 +3,26 @@ import { _validateGameDataForTests, setSchemaValidationLogging } from '../js/sys
 setSchemaValidationLogging(false)
 
 // Helper to clone
-function clone(o){ return JSON.parse(JSON.stringify(o)) }
+function clone(o) {
+  return JSON.parse(JSON.stringify(o))
+}
 
 const baseValid = {
-  ui: { titulo: 'Titulo', botoes: { iniciar: 'Iniciar' }, mensagens: { carregando: 'Carregando...' } },
+  ui: {
+    titulo: 'Titulo',
+    botoes: { iniciar: 'Iniciar' },
+    mensagens: { carregando: 'Carregando...' }
+  },
   pontuacao: { pesoDrag: 40, pesoQuiz: 60 },
   acessibilidade: { altoContraste: false },
   drag: {
-    targets: ['A','B'],
-    blocks: ['X','Y'],
+    targets: ['A', 'B'],
+    blocks: ['X', 'Y'],
     map: { X: 'A', Y: 'B' },
     descricoes: { A: 'a', B: 'b' }
   },
   quiz: {
-    perguntas: [
-      { texto: 'Q1', alternativas: ['a','b','c'], correta: 1 }
-    ]
+    perguntas: [{ texto: 'Q1', alternativas: ['a', 'b', 'c'], correta: 1 }]
   }
 }
 

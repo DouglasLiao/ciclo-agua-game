@@ -2,19 +2,21 @@ import { startQuiz, computeScoreQuiz, computeScoreDrag } from '../systems/quizSy
 import { getPath, getArray } from '../systems/ui.js'
 
 export default class QuizPhaseScene extends Phaser.Scene {
-  constructor() { super('QuizPhaseScene') }
+  constructor() {
+    super('QuizPhaseScene')
+  }
 
   init(data) {
-  this.dragAcertos = data.dragAcertos || 0
-  this.dragTotal = data.dragTotal || 0
+    this.dragAcertos = data.dragAcertos || 0
+    this.dragTotal = data.dragTotal || 0
     this.gameData = data.gameData || null
   }
 
   create() {
-  const quizTitle = getPath(this.gameData, 'ui.mensagens.faseQuiz', 'Fase de Quiz')
-  this.add.text(20, 20, quizTitle, { fontSize: '20px', color: '#ffffff' })
+    const quizTitle = getPath(this.gameData, 'ui.mensagens.faseQuiz', 'Fase de Quiz')
+    this.add.text(20, 20, quizTitle, { fontSize: '20px', color: '#ffffff' })
 
-  const perguntasDemo = getArray(this.gameData, 'quiz.perguntas')
+    const perguntasDemo = getArray(this.gameData, 'quiz.perguntas')
 
     startQuiz(this, perguntasDemo, {
       onFinish: (res) => {
@@ -28,8 +30,12 @@ export default class QuizPhaseScene extends Phaser.Scene {
         if (this.sound && this.cache.audio.exists('quiz_complete')) {
           try {
             const s = this.sound.play('quiz_complete')
-            if (!s) { /* som não iniciou */ }
-          } catch (_err) { /* ignore */ }
+            if (!s) {
+              /* som não iniciou */
+            }
+          } catch (_err) {
+            /* ignore */
+          }
         }
         this.scene.start('ResultsScene', { scoreTotal, gameData: this.gameData })
       }

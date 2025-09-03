@@ -10,7 +10,8 @@ const I18N_STATE = {
 export function loadI18nFromGameData(gameData) {
   if (gameData?.i18n?.locales) {
     I18N_STATE.locales = gameData.i18n.locales
-    I18N_STATE.defaultLocale = gameData.i18n.defaultLocale || Object.keys(gameData.i18n.locales)[0] || 'pt-BR'
+    I18N_STATE.defaultLocale =
+      gameData.i18n.defaultLocale || Object.keys(gameData.i18n.locales)[0] || 'pt-BR'
   }
   if (gameData?.i18n?.locale) {
     I18N_STATE.locale = gameData.i18n.locale
@@ -31,5 +32,9 @@ export function t(key, fallback) {
   return fallback !== undefined ? fallback : key
 }
 
-export function getCurrentLocale() { return I18N_STATE.locale }
-export function getI18nState() { return { ...I18N_STATE } }
+export function getCurrentLocale() {
+  return I18N_STATE.locale
+}
+export function getI18nState() {
+  return { ...I18N_STATE }
+}

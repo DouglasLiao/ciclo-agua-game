@@ -1,16 +1,32 @@
-html, body { margin:0; padding:0; height:100%; background:#091520; font-family: system-ui, sans-serif; }
-#game-container { width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
-canvas { outline: none; image-rendering: pixelated; }
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #091520;
+  font-family: system-ui, sans-serif;
+}
+#game-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+canvas {
+  outline: none;
+  image-rendering: pixelated;
+}
 
 /* Alto contraste modo acessibilidade */
 body.alto-contraste {
-	background: #000 !important;
-	color: #fff !important;
+  background: #000 !important;
+  color: #fff !important;
 }
 body.alto-contraste canvas {
-	outline: 2px solid #fff;
+  outline: 2px solid #fff;
 }
 body.alto-contraste .btn,
-body.alto-contraste [role=button] {
-	filter: brightness(1.1) contrast(1.15);
+body.alto-contraste [role='button'] {
+  filter: brightness(1.1) contrast(1.15);
 }

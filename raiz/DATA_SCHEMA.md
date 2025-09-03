@@ -105,7 +105,7 @@ Regras:
 
 - `targets`: array não vazio de strings (nomes de etapas).
 - `blocks`: array não vazio de strings (rótulos arrastáveis).
-- `map`: objeto (cada chave = um item de `blocks`, valor = nome de target correto) — *não validamos se todos os blocks possuem entry mas recomendado*.
+- `map`: objeto (cada chave = um item de `blocks`, valor = nome de target correto) — _não validamos se todos os blocks possuem entry mas recomendado_.
 - `descricoes`: objeto (chave = nome de target, valor = string explicativa). Pode conter subset.
 - `cores` (opcional): se presente, cada chave deve ser string (#hex) ou número inteiro (0xRRGGBB). Valores inválidos são ignorados e defaults aplicados.
 
@@ -134,28 +134,28 @@ Regras para cada item em `perguntas`:
 
 A função interna `validateAndFilter` (exposta em testes como `_validateGameDataForTests`) executa verificações e agrega todas as mensagens de erro antes de lançar uma exceção.
 
-| Campo / Regra | Erro Gatilho (trecho da mensagem) |
-|---------------|-----------------------------------|
-| Objeto raiz não objeto | `Objeto raiz inválido` |
-| `ui` ausente | `ui ausente` |
-| `ui.titulo` não string | `ui.titulo ausente` |
-| `pontuacao` ausente | `pontuacao ausente` |
-| `pesoDrag` não número | `pontuacao.pesoDrag deve ser número` |
-| `pesoQuiz` não número | `pontuacao.pesoQuiz deve ser número` |
-| `acessibilidade` ausente | `acessibilidade ausente` |
-| `altoContraste` não boolean | `acessibilidade.altoContraste deve ser boolean` |
-| `drag` ausente | `drag ausente` |
-| `drag.targets` vazio | `drag.targets deve ser array não vazio` |
-| `drag.blocks` vazio | `drag.blocks deve ser array não vazio` |
-| `drag.map` ausente | `drag.map ausente` |
-| `drag.descricoes` ausente | `drag.descricoes ausente` |
-| `quiz` ausente | `quiz ausente` |
-| `quiz.perguntas` vazio | `quiz.perguntas deve ser array não vazio` |
-| Pergunta não objeto | `quiz.perguntas[i] não é objeto` |
-| `texto` ausente | `quiz.perguntas[i].texto deve ser string` |
-| `alternativas` inválido | `quiz.perguntas[i].alternativas deve ter >=2 itens` |
-| `correta` não numérico | `quiz.perguntas[i].correta deve ser número` |
-| `correta` fora do intervalo | `quiz.perguntas[i].correta fora do intervalo` |
+| Campo / Regra               | Erro Gatilho (trecho da mensagem)                   |
+| --------------------------- | --------------------------------------------------- |
+| Objeto raiz não objeto      | `Objeto raiz inválido`                              |
+| `ui` ausente                | `ui ausente`                                        |
+| `ui.titulo` não string      | `ui.titulo ausente`                                 |
+| `pontuacao` ausente         | `pontuacao ausente`                                 |
+| `pesoDrag` não número       | `pontuacao.pesoDrag deve ser número`                |
+| `pesoQuiz` não número       | `pontuacao.pesoQuiz deve ser número`                |
+| `acessibilidade` ausente    | `acessibilidade ausente`                            |
+| `altoContraste` não boolean | `acessibilidade.altoContraste deve ser boolean`     |
+| `drag` ausente              | `drag ausente`                                      |
+| `drag.targets` vazio        | `drag.targets deve ser array não vazio`             |
+| `drag.blocks` vazio         | `drag.blocks deve ser array não vazio`              |
+| `drag.map` ausente          | `drag.map ausente`                                  |
+| `drag.descricoes` ausente   | `drag.descricoes ausente`                           |
+| `quiz` ausente              | `quiz ausente`                                      |
+| `quiz.perguntas` vazio      | `quiz.perguntas deve ser array não vazio`           |
+| Pergunta não objeto         | `quiz.perguntas[i] não é objeto`                    |
+| `texto` ausente             | `quiz.perguntas[i].texto deve ser string`           |
+| `alternativas` inválido     | `quiz.perguntas[i].alternativas deve ter >=2 itens` |
+| `correta` não numérico      | `quiz.perguntas[i].correta deve ser número`         |
+| `correta` fora do intervalo | `quiz.perguntas[i].correta fora do intervalo`       |
 
 Observação: erros de `cores` não interrompem a carga — fallback padrão é aplicado silenciosamente.
 
@@ -180,12 +180,12 @@ Observação: erros de `cores` não interrompem a carga — fallback padrão é 
 
 ## 11. Exemplos de Erros Comuns
 
-| Erro | Consequência | Correção |
-|------|--------------|----------|
-| Remover `ui.titulo` | Falha de schema → mock | Repor `ui.titulo` string |
-| `correta`: string | Falha de schema | Converter para índice numérico |
-| `alternativas`: 1 item | Falha de schema | Adicionar mais opções |
-| `drag.blocks` vazio | Falha de schema | Inserir mínimo 1 bloco e alvo |
+| Erro                   | Consequência           | Correção                       |
+| ---------------------- | ---------------------- | ------------------------------ |
+| Remover `ui.titulo`    | Falha de schema → mock | Repor `ui.titulo` string       |
+| `correta`: string      | Falha de schema        | Converter para índice numérico |
+| `alternativas`: 1 item | Falha de schema        | Adicionar mais opções          |
+| `drag.blocks` vazio    | Falha de schema        | Inserir mínimo 1 bloco e alvo  |
 
 ## 12. Fluxo de Atualização de Conteúdo
 
@@ -205,17 +205,18 @@ Arquivo de teste: `raiz/tests/dataLoader.validation.test.js` cobre:
 
 ## 14. Roadmap de Evolução do Schema
 
-| Proposta | Descrição | Impacto |
-|----------|-----------|---------|
+| Proposta                 | Descrição                                | Impacto                     |
+| ------------------------ | ---------------------------------------- | --------------------------- |
 | `i18n` blocos por idioma | `{ "ui": { "pt": {...}, "en": {...} } }` | Adaptar resolutor de idioma |
-| `tempoLimite` no quiz | Campo numérico opcional | Ajustar lógica de contagem |
-| `hints` por pergunta | Array de dicas | UI adicional |
-| `versao` | Inteiro para migrações | Permitir upgrade automático |
-| `drag.layout` | Posições sugeridas | Menos cálculo na cena |
+| `tempoLimite` no quiz    | Campo numérico opcional                  | Ajustar lógica de contagem  |
+| `hints` por pergunta     | Array de dicas                           | UI adicional                |
+| `versao`                 | Inteiro para migrações                   | Permitir upgrade automático |
+| `drag.layout`            | Posições sugeridas                       | Menos cálculo na cena       |
 
 ## 15. Licença
 
 Segue a licença geral do projeto (MIT) — esse documento pode ser reutilizado com crédito.
 
 ---
-*Última atualização: sincronizado com regras de `dataLoader.js` na branch master.*
+
+_Última atualização: sincronizado com regras de `dataLoader.js` na branch master._

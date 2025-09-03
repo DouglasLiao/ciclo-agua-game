@@ -47,7 +47,7 @@ function applyLetterbox(game) {
   // Centralização vertical manual (letterbox top/bottom)
   const topOffset = (h - displayHeight) / 2
   canvas.style.position = 'absolute'
-  canvas.style.left = ((w - displayWidth) / 2) + 'px'
+  canvas.style.left = (w - displayWidth) / 2 + 'px'
   canvas.style.top = topOffset + 'px'
   // Background letterbox já é a cor do body / container.
 }

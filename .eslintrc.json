@@ -11,7 +11,5 @@
     "import/no-unresolved": "error",
     "jest/expect-expect": "off"
   },
-  "overrides": [
-    { "files": ["raiz/js/**/*.js"], "globals": { "Phaser": "readonly" } }
-  ]
+  "overrides": [{ "files": ["raiz/js/**/*.js"], "globals": { "Phaser": "readonly" } }]
 }

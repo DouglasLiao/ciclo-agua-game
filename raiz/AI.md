@@ -10,11 +10,11 @@ Documento de governança do uso de Inteligência Artificial no projeto Ciclo da 
 
 ## 2. Ferramentas de IA Utilizadas
 
-| Ferramenta | Propósito | Nível de Automação | Observações |
-|------------|----------|--------------------|-------------|
-| GitHub Copilot (chat / inline) | Sugerir código, docs, refactors | Assistido | Sugestões sempre revisadas manualmente |
-| Microsoft 365 Copilot | Suporte redacional (resumos, listas) | Assistido | Para material pedagógico / README |
-| (Futuro) Modelo local (LLM pequeno) | Geração offline de perguntas | A validar | Requer curadoria e filtro |
+| Ferramenta                          | Propósito                            | Nível de Automação | Observações                            |
+| ----------------------------------- | ------------------------------------ | ------------------ | -------------------------------------- |
+| GitHub Copilot (chat / inline)      | Sugerir código, docs, refactors      | Assistido          | Sugestões sempre revisadas manualmente |
+| Microsoft 365 Copilot               | Suporte redacional (resumos, listas) | Assistido          | Para material pedagógico / README      |
+| (Futuro) Modelo local (LLM pequeno) | Geração offline de perguntas         | A validar          | Requer curadoria e filtro              |
 
 ## 3. Escopo Permitido de Geração
 
@@ -41,24 +41,24 @@ Ou acrescentar co‑autor no trailer se aplicável.
 
 ### Arquivos / Trechos Gerados ou Fortemente Assistidos
 
-| Arquivo / Pasta | Natureza da Geração | Observações de Revisão |
-|-----------------|---------------------|------------------------|
-| `js/systems/dataLoader.js` (export teste / logging flag) | Ajuste guiado por prompt | Revisado sintaxe + efeitos colaterais |
-| `README.md` (seções Docker, Makefile) | Texto + formatação | Verificado links e blocos |
-| `QA.md` | Lista estruturada | Validado cobertura necessária |
-| `DATA_SCHEMA.md` | Especificação detalhada | Conferido contra implementação real |
-| `tests/*.test.js` | Casos de validação | Conferido alcance + falsos positivos |
-| `Dockerfile` | Boilerplate base | Verificado camadas mínimas |
-| `Makefile` | Alvos comuns | Testado comandos principais |
-| `js/scenes/DragPhaseScene.js` (HUD score reativada) | Inserção callback + texto dinâmico | Verificado atualização em acerto/erro |
-| `js/systems/dragSystem.js` (onScoreChange meta) | Propagação meta `{ correct, error }` | Confirmado não afeta lógica principal |
-| `js/systems/quizSystem.js` (shuffle perguntas + alternativas) | Embaralhamento Fisher-Yates | Validado preservação índice correto |
-| `eslint.config.js` | Criação de configuração Flat ESLint | Revisado: escopos, globals e plugins |
-| `package.json` (scripts lint/lint:fix) | Adição de scripts e deps ESLint | Confirmado versões e execução limpa |
-| `js/scenes/MenuScene.js` (ajustes lint) | Remoção comentário global redundante + rename variáveis erro | Zero warnings após lint |
-| `js/scenes/QuizPhaseScene.js` (ajustes lint) | Remoção bloco vazio / catch minimalista | Mantida lógica original |
-| `js/scenes/DragPhaseScene.js` (ajustes lint) | Padronização catch e prefixo de err não usado | Sem warnings |
-| `js/systems/dragSystem.js` (ajustes lint) | Variável futura prefixada `_targetByName` | Evita warning no-unused-vars |
+| Arquivo / Pasta                                               | Natureza da Geração                                          | Observações de Revisão                |
+| ------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------- |
+| `js/systems/dataLoader.js` (export teste / logging flag)      | Ajuste guiado por prompt                                     | Revisado sintaxe + efeitos colaterais |
+| `README.md` (seções Docker, Makefile)                         | Texto + formatação                                           | Verificado links e blocos             |
+| `QA.md`                                                       | Lista estruturada                                            | Validado cobertura necessária         |
+| `DATA_SCHEMA.md`                                              | Especificação detalhada                                      | Conferido contra implementação real   |
+| `tests/*.test.js`                                             | Casos de validação                                           | Conferido alcance + falsos positivos  |
+| `Dockerfile`                                                  | Boilerplate base                                             | Verificado camadas mínimas            |
+| `Makefile`                                                    | Alvos comuns                                                 | Testado comandos principais           |
+| `js/scenes/DragPhaseScene.js` (HUD score reativada)           | Inserção callback + texto dinâmico                           | Verificado atualização em acerto/erro |
+| `js/systems/dragSystem.js` (onScoreChange meta)               | Propagação meta `{ correct, error }`                         | Confirmado não afeta lógica principal |
+| `js/systems/quizSystem.js` (shuffle perguntas + alternativas) | Embaralhamento Fisher-Yates                                  | Validado preservação índice correto   |
+| `eslint.config.js`                                            | Criação de configuração Flat ESLint                          | Revisado: escopos, globals e plugins  |
+| `package.json` (scripts lint/lint:fix)                        | Adição de scripts e deps ESLint                              | Confirmado versões e execução limpa   |
+| `js/scenes/MenuScene.js` (ajustes lint)                       | Remoção comentário global redundante + rename variáveis erro | Zero warnings após lint               |
+| `js/scenes/QuizPhaseScene.js` (ajustes lint)                  | Remoção bloco vazio / catch minimalista                      | Mantida lógica original               |
+| `js/scenes/DragPhaseScene.js` (ajustes lint)                  | Padronização catch e prefixo de err não usado                | Sem warnings                          |
+| `js/systems/dragSystem.js` (ajustes lint)                     | Variável futura prefixada `_targetByName`                    | Evita warning no-unused-vars          |
 
 ## 5. Fluxo de Revisão
 
@@ -79,22 +79,22 @@ Evitar prompts vagos: “melhora tudo”, “otimiza geral”.
 
 ### Exemplos de Prompts Usados
 
-| Objetivo | Prompt Resumido |
-|----------|-----------------|
-| Testes schema | "Crie testes Jest cobrindo casos válidos e inválidos de jogo.json" |
-| Docker | "Gerar Dockerfile mínimo para servir diretório estático raiz/ (Node ou nginx)" |
-| Documentação | "Produza DATA_SCHEMA.md com regras, exemplos e roadmap" |
-| Acessibilidade | "Sugerir modo alto contraste simples via classe CSS" |
+| Objetivo       | Prompt Resumido                                                                |
+| -------------- | ------------------------------------------------------------------------------ |
+| Testes schema  | "Crie testes Jest cobrindo casos válidos e inválidos de jogo.json"             |
+| Docker         | "Gerar Dockerfile mínimo para servir diretório estático raiz/ (Node ou nginx)" |
+| Documentação   | "Produza DATA_SCHEMA.md com regras, exemplos e roadmap"                        |
+| Acessibilidade | "Sugerir modo alto contraste simples via classe CSS"                           |
 
 ## 7. Critérios de Aceitação para Código Gerado
 
-| Critério | Descrição | Verificação |
-|----------|-----------|-------------|
-| Compilação/Execução | Sem erros em navegador/Node | Rodar jogo + `npm test` |
-| Clareza | Código legível e modular | Revisão humana |
-| Aderência ao Schema | Não introduz chaves não documentadas | Comparar com DATA_SCHEMA.md |
-| Testabilidade | Pode ser coberto por teste unitário | Casos adicionados ou existentes |
-| Isolamento | Mudança não quebra fluxo de cenas | Smoke manual |
+| Critério            | Descrição                            | Verificação                     |
+| ------------------- | ------------------------------------ | ------------------------------- |
+| Compilação/Execução | Sem erros em navegador/Node          | Rodar jogo + `npm test`         |
+| Clareza             | Código legível e modular             | Revisão humana                  |
+| Aderência ao Schema | Não introduz chaves não documentadas | Comparar com DATA_SCHEMA.md     |
+| Testabilidade       | Pode ser coberto por teste unitário  | Casos adicionados ou existentes |
+| Isolamento          | Mudança não quebra fluxo de cenas    | Smoke manual                    |
 
 ## 8. Confirmação de Entendimento Humano
 
@@ -108,12 +108,12 @@ Se alguma alteração não for totalmente compreendida → REJEITAR / REFAZER co
 
 ## 9. Mitigação de Riscos
 
-| Risco | Mitigação |
-|-------|-----------|
-| Alucinação de API Phaser | Conferir docs oficiais antes de aceitar |
-| Introdução de dependência pesada | Limitar a zero libs extras sem justificativa |
-| Conteúdo factual incorreto em perguntas | Revisão pedagógica manual |
-| Vazamento de lógica central para prompt | Não colar segredos (não há no escopo) |
+| Risco                                   | Mitigação                                    |
+| --------------------------------------- | -------------------------------------------- |
+| Alucinação de API Phaser                | Conferir docs oficiais antes de aceitar      |
+| Introdução de dependência pesada        | Limitar a zero libs extras sem justificativa |
+| Conteúdo factual incorreto em perguntas | Revisão pedagógica manual                    |
+| Vazamento de lógica central para prompt | Não colar segredos (não há no escopo)        |
 
 ## 10. Evolução Prevista
 
@@ -135,4 +135,5 @@ Manter somente sugestões compatíveis com MIT; evitar copiar trechos externos n
 Verificar que exemplos de perguntas são originais ou suficientemente genéricos.
 
 ---
+
 Última atualização: 2025-09-03 – migração para ESLint Flat Config, adição de scripts lint, limpeza de warnings nas cenas e sistemas.

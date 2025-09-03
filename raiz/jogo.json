@@ -50,7 +50,12 @@
       },
       {
         "texto": "O que acontece na condensação?",
-        "alternativas": ["Formação das nuvens", "Queda da chuva", "Evaporação da água", "Absorção pelo solo"],
+        "alternativas": [
+          "Formação das nuvens",
+          "Queda da chuva",
+          "Evaporação da água",
+          "Absorção pelo solo"
+        ],
         "correta": 0
       },
       {

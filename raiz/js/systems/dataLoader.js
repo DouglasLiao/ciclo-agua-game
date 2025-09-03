@@ -10,18 +10,24 @@ export function resolveDatasetName(fallback = 'jogo.json') {
       if (globalThis.__DATASET__) return String(globalThis.__DATASET__)
       if (globalThis.GAME_DATASET) return String(globalThis.GAME_DATASET)
     }
-  } catch (_) { /* noop */ }
+  } catch (_) {
+    /* noop */
+  }
   try {
     if (typeof process !== 'undefined' && process && process.env) {
       if (process.env.GAME_DATASET) return String(process.env.GAME_DATASET)
       if (process.env.VITE_DATASET) return String(process.env.VITE_DATASET)
     }
-  } catch (_) { /* noop */ }
+  } catch (_) {
+    /* noop */
+  }
   try {
     if (import.meta && import.meta.env && import.meta.env.VITE_DATASET) {
       return String(import.meta.env.VITE_DATASET)
     }
-  } catch (_) { /* noop */ }
+  } catch (_) {
+    /* noop */
+  }
   return fallback
 }
 
@@ -51,7 +57,9 @@ export async function loadGameData(url) {
     }
     _cache.set(key, filtered)
     return filtered
-  })().finally(() => { _loadingPromises.delete(key) })
+  })().finally(() => {
+    _loadingPromises.delete(key)
+  })
   _loadingPromises.set(key, p)
   return p
 }
@@ -72,7 +80,9 @@ export function invalidateGameDataCache(url) {
 // ---- Validação de schema ----
 function validateAndFilter(full) {
   const errors = []
-  const logErr = (msg) => { errors.push(msg) /* schema error suprimido em produção */ }
+  const logErr = (msg) => {
+    errors.push(msg) /* schema error suprimido em produção */
+  }
 
   const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v)
   if (!isObj(full)) logErr('Objeto raiz inválido (esperado objeto)')
@@ -93,13 +103,16 @@ function validateAndFilter(full) {
   // acessibilidade
   const acc = isObj(full.acessibilidade) ? full.acessibilidade : {}
   if (!isObj(full.acessibilidade)) logErr('acessibilidade ausente ou não objeto')
-  if (typeof acc.altoContraste !== 'boolean') logErr('acessibilidade.altoContraste deve ser boolean')
+  if (typeof acc.altoContraste !== 'boolean')
+    logErr('acessibilidade.altoContraste deve ser boolean')
 
   // drag
   const drag = isObj(full.drag) ? full.drag : {}
   if (!isObj(full.drag)) logErr('drag ausente ou não objeto')
-  if (!Array.isArray(drag.targets) || drag.targets.length === 0) logErr('drag.targets deve ser array não vazio')
-  if (!Array.isArray(drag.blocks) || drag.blocks.length === 0) logErr('drag.blocks deve ser array não vazio')
+  if (!Array.isArray(drag.targets) || drag.targets.length === 0)
+    logErr('drag.targets deve ser array não vazio')
+  if (!Array.isArray(drag.blocks) || drag.blocks.length === 0)
+    logErr('drag.blocks deve ser array não vazio')
   if (!isObj(drag.map)) logErr('drag.map ausente ou não objeto')
   if (!isObj(drag.descricoes)) logErr('drag.descricoes ausente ou não objeto')
 
@@ -110,11 +123,19 @@ function validateAndFilter(full) {
     logErr('quiz.perguntas deve ser array não vazio')
   } else {
     quiz.perguntas.forEach((p, idx) => {
-      if (!isObj(p)) { logErr(`quiz.perguntas[${idx}] não é objeto`); return }
+      if (!isObj(p)) {
+        logErr(`quiz.perguntas[${idx}] não é objeto`)
+        return
+      }
       if (typeof p.texto !== 'string') logErr(`quiz.perguntas[${idx}].texto deve ser string`)
-      if (!Array.isArray(p.alternativas) || p.alternativas.length < 2) logErr(`quiz.perguntas[${idx}].alternativas deve ter >=2 itens`)
+      if (!Array.isArray(p.alternativas) || p.alternativas.length < 2)
+        logErr(`quiz.perguntas[${idx}].alternativas deve ter >=2 itens`)
       if (typeof p.correta !== 'number') logErr(`quiz.perguntas[${idx}].correta deve ser número`)
-      else if (Array.isArray(p.alternativas) && (p.correta < 0 || p.correta >= p.alternativas.length)) logErr(`quiz.perguntas[${idx}].correta fora do intervalo`)
+      else if (
+        Array.isArray(p.alternativas) &&
+        (p.correta < 0 || p.correta >= p.alternativas.length)
+      )
+        logErr(`quiz.perguntas[${idx}].correta fora do intervalo`)
     })
   }
 
@@ -164,15 +185,15 @@ function mockGameData() {
       blocks: ['Água do solo', 'Nuvem', 'Chuva', 'Lago'],
       map: {
         'Água do solo': 'Infiltração',
-        'Nuvem': 'Condensação',
-        'Chuva': 'Precipitação',
-        'Lago': 'Evaporação'
+        Nuvem: 'Condensação',
+        Chuva: 'Precipitação',
+        Lago: 'Evaporação'
       },
       descricoes: {
-        'Evaporação': 'Água aquece e vira vapor.',
-        'Condensação': 'Vapor esfria e forma nuvens.',
-        'Precipitação': 'Água cai em chuva.',
-        'Infiltração': 'Água penetra no solo.'
+        Evaporação: 'Água aquece e vira vapor.',
+        Condensação: 'Vapor esfria e forma nuvens.',
+        Precipitação: 'Água cai em chuva.',
+        Infiltração: 'Água penetra no solo.'
       }
     },
     quiz: {

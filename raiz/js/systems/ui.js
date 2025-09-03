@@ -10,7 +10,7 @@ export function getPath(root, path, fallback = '') {
       return fallback
     }
   }
-  return (cur === undefined || cur === null) ? fallback : cur
+  return cur === undefined || cur === null ? fallback : cur
 }
 
 // getUI limita a busca ao segmento ui.* mantendo compat retro.

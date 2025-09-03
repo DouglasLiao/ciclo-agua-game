@@ -5,7 +5,11 @@
 // - map: { [blockLabel]: targetNameCorreto }
 // callbacks: { onScoreChange(score, state, meta), onAllPlaced(state) }
 // Retorna objeto de estado com blocks enriquecidos.
-export function createDragSystem(scene, { targets, blocks, map }, { onScoreChange, onAllPlaced } = {}) {
+export function createDragSystem(
+  scene,
+  { targets, blocks, map },
+  { onScoreChange, onAllPlaced } = {}
+) {
   const state = {
     score: 0,
     total: blocks.length,
@@ -38,12 +42,14 @@ export function createDragSystem(scene, { targets, blocks, map }, { onScoreChang
     corBordaErro = 0xb33939 // default vermelho
   }
 
-  const _targetByName = Object.fromEntries(targets.map(t => [t.name, t])) // reservado para uso futuro
+  const _targetByName = Object.fromEntries(targets.map((t) => [t.name, t])) // reservado para uso futuro
 
   // Facilita teste de overlap
   function getOverlapTarget(blockRect) {
     const bBounds = blockRect.getBounds()
-    return targets.find(t => Phaser.Geom.Intersects.RectangleToRectangle(bBounds, t.rect.getBounds()))
+    return targets.find((t) =>
+      Phaser.Geom.Intersects.RectangleToRectangle(bBounds, t.rect.getBounds())
+    )
   }
 
   function clampToCanvas(displayObj) {
@@ -77,7 +83,7 @@ export function createDragSystem(scene, { targets, blocks, map }, { onScoreChang
 
   // Eventos globais de drag
   scene.input.on('dragstart', (_pointer, gameObject) => {
-    const blk = state.blocks.find(b => b.rect === gameObject)
+    const blk = state.blocks.find((b) => b.rect === gameObject)
     if (blk && blk.placed) {
       // Evita re-drag se já colocado
       gameObject.disableInteractive()
@@ -85,7 +91,7 @@ export function createDragSystem(scene, { targets, blocks, map }, { onScoreChang
   })
 
   scene.input.on('drag', (_pointer, gameObject, dragX, dragY) => {
-    const blk = state.blocks.find(b => b.rect === gameObject)
+    const blk = state.blocks.find((b) => b.rect === gameObject)
     if (!blk || blk.placed) return
     gameObject.x = dragX
     gameObject.y = dragY
@@ -93,7 +99,7 @@ export function createDragSystem(scene, { targets, blocks, map }, { onScoreChang
   })
 
   scene.input.on('dragend', (_pointer, gameObject) => {
-    const blk = state.blocks.find(b => b.rect === gameObject)
+    const blk = state.blocks.find((b) => b.rect === gameObject)
     if (!blk || blk.placed) return
     const overlap = getOverlapTarget(gameObject)
     if (overlap) {
@@ -106,8 +112,8 @@ export function createDragSystem(scene, { targets, blocks, map }, { onScoreChang
         blk.target = overlap.name
         // Apenas borda verde (sem alterar fill existente)
         gameObject.setStrokeStyle(4, corBordaAcerto, 1)
-  state.score += 1
-  if (onScoreChange) onScoreChange(state.score, state, { correct: true })
+        state.score += 1
+        if (onScoreChange) onScoreChange(state.score, state, { correct: true })
         // Desativa interação futura
         gameObject.disableInteractive()
         // Check all placed
@@ -117,13 +123,13 @@ export function createDragSystem(scene, { targets, blocks, map }, { onScoreChang
         return
       }
     }
-  // Caso incorreto ou sem alvo: shake simples + retorno à origem + borda vermelha temporária
+    // Caso incorreto ou sem alvo: shake simples + retorno à origem + borda vermelha temporária
     const origin = blk.originalPos
     const originalX = gameObject.x
     const shakeAmp = 12
     // aplica borda vermelha mais grossa
     gameObject.setStrokeStyle(4, corBordaErro, 1)
-  if (onScoreChange) onScoreChange(state.score, state, { correct: false, error: true })
+    if (onScoreChange) onScoreChange(state.score, state, { correct: false, error: true })
     scene.tweens.add({
       targets: gameObject,
       x: originalX + shakeAmp,
@@ -136,9 +142,9 @@ export function createDragSystem(scene, { targets, blocks, map }, { onScoreChang
           targets: gameObject,
           x: origin.x,
           y: origin.y,
-            duration: 200,
-            ease: 'Sine.easeOut'
-        , onComplete: () => {
+          duration: 200,
+          ease: 'Sine.easeOut',
+          onComplete: () => {
             // restaura borda original se ainda não colocado
             if (!blk.placed) {
               gameObject.setStrokeStyle(blk.originalLineWidth, blk.originalStrokeColor, 1)
