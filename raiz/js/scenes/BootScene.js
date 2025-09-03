@@ -13,13 +13,7 @@ export default class BootScene extends Phaser.Scene {
     this.load.audio('quiz_complete', [
       'assets/sfx/complete.wav'
     ]);
-
-    // Log de erros de carregamento de assets.
-    this.load.on('loaderror', (fileObj) => {
-      console.error('[BootScene] Erro ao carregar asset:', fileObj?.key, fileObj?.src || fileObj);
-    });
   }
-
   async create() {
     // Detecta dataset via query (?data=arquivo.json ou ?jogo=arquivo.json)
   let dataset = resolveDatasetName('jogo.json');
@@ -30,25 +24,16 @@ export default class BootScene extends Phaser.Scene {
       }
     } catch (e) { /* ignore */ }
     this.datasetFile = dataset;
-    try {
-      this.gameData = await loadGameData(dataset);
-    } catch (e) {
-      console.error('[BootScene] Falha ao carregar', dataset, e);
-      this.gameData = {};
-    }
+  try { this.gameData = await loadGameData(dataset); } catch (_) { this.gameData = {}; }
     // Acessibilidade: alto contraste
     try {
       const alto = this.gameData?.acessibilidade?.altoContraste;
       if (typeof document !== 'undefined' && document.body) {
         document.body.classList.toggle('alto-contraste', !!alto);
       }
-    } catch (e) {
-      console.warn('[BootScene] Não foi possível aplicar alto contraste', e);
-    }
+    } catch (_) { /* alto contraste falhou */ }
     // Removido decodeAudio manual: Phaser já decodifica automaticamente quando necessário.
-    if (this.sound && this.cache.audio.exists('quiz_complete')) {
-      console.debug('[BootScene] Áudio quiz_complete carregado (decodificação automática)');
-    }
+  // Áudio opcional carregado (debug log removido em produção)
   this.scene.start('MenuScene', { gameData: this.gameData, dataset });
   }
 }

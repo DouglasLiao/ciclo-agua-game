@@ -41,14 +41,12 @@ export async function loadGameData(url) {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       full = await res.json();
     } catch (netErr) {
-      console.error('[dataLoader] Erro de rede ao buscar', key, netErr);
       full = mockGameData(); // fallback mínimo
     }
     let filtered;
     try {
       filtered = validateAndFilter(full);
     } catch (schemaErr) {
-      console.error('[dataLoader] Erro de schema. Usando mock mínimo.', schemaErr);
       filtered = validateAndFilter(mockGameData());
     }
     _cache.set(key, filtered);
@@ -74,7 +72,7 @@ export function invalidateGameDataCache(url) {
 // ---- Validação de schema ----
 function validateAndFilter(full) {
   const errors = [];
-  const logErr = (msg) => { errors.push(msg); if (_schemaLogEnabled) console.error('[dataLoader] Schema', msg); };
+  const logErr = (msg) => { errors.push(msg); /* schema error suprimido em produção */ };
 
   const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
   if (!isObj(full)) logErr('Objeto raiz inválido (esperado objeto)');

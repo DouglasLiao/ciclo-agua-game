@@ -30,7 +30,7 @@ export function computeScoreDrag(acertosDrag, totalDrag, pesoDrag = 50) {
 // Aceita formato interno { text, options, correct } ou JSON { texto, alternativas, correta }.
 export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange, debug = false } = {}) {
   if (!Array.isArray(perguntas) || !perguntas.length) {
-    console.error('[quizSystem] Nenhuma pergunta disponível.');
+  // Nenhuma pergunta disponível
     if (onFinish) onFinish({ acertos: 0 }, { perguntas: [], respostas: [], concluido: true });
     return { perguntas: [], respostas: [], concluido: true };
   }
@@ -39,10 +39,10 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
     const options = Array.isArray(p.options) ? p.options : (Array.isArray(p.alternativas) ? p.alternativas : []);
     let correct = (p.correct !== undefined ? p.correct : p.correta);
     if (!Array.isArray(options) || options.length < 2) {
-      console.warn('[quizSystem] Alternativas insuficientes em índice', i);
+  // aviso: alternativas insuficientes
     }
     if (typeof correct !== 'number' || correct < 0 || correct >= options.length) {
-      console.warn('[quizSystem] Índice correto inválido em', i, 'ajustando para 0');
+  // índice incorreto ajustado para 0
       correct = 0;
     }
     return { text, options, correct };
@@ -50,7 +50,6 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
   let shuffledPerguntas;
   if (debug) {
     shuffledPerguntas = normalizadas.map(p => ({ ...p }));
-    console.debug('[quizSystem] Debug ON: perguntas não embaralhadas');
   } else {
     shuffledPerguntas = normalizadas.map(orig => {
       const optionsWithIndex = orig.options.map((opt, idx) => ({ opt, originalIndex: idx }));

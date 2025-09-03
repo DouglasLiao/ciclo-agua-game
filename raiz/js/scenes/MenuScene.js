@@ -37,7 +37,6 @@ export default class MenuScene extends Phaser.Scene {
         const data = await this.gameDataPromise;
         this.scene.start('DragPhaseScene', { gameData: data });
       } catch (e) {
-        console.error('[MenuScene] Erro ao iniciar (dados):', e);
         this.startText.setColor('#ff5555');
         this.startText.text = getPath(this.gameData, 'ui.mensagens.falhaCarregar', 'Falha - tentar?');
               this.transitioning = false;
@@ -58,7 +57,7 @@ export default class MenuScene extends Phaser.Scene {
             enableStart();
           })
           .catch(e => {
-            console.error('[MenuScene] Falha ao carregar dataset', this.currentDataset, e);
+            // falha ao carregar dataset
             this.titleText.text = getPath(this.initialGameData, 'ui.mensagens.falhaCarregar', 'Erro ao carregar');
             this.startText.setColor('#ff5555');
             this.startText.text = 'Recarregar';
@@ -90,7 +89,7 @@ export default class MenuScene extends Phaser.Scene {
           enableStart();
         })
         .catch(err => {
-          console.error('[MenuScene] Erro ao alternar dataset', err);
+          // erro ao alternar dataset
           this.titleText.text = 'Erro ao alternar dataset';
           this.startText.setColor('#ff5555');
           this.startText.setText('Falhou');

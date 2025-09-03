@@ -5,7 +5,6 @@ export default class QuizPhaseScene extends Phaser.Scene {
   constructor() { super('QuizPhaseScene'); }
 
   init(data) {
-  console.log(data)
   this.dragAcertos = data.dragAcertos || 0;
   this.dragTotal = data.dragTotal || 0;
     this.gameData = data.gameData || null;
@@ -29,12 +28,11 @@ export default class QuizPhaseScene extends Phaser.Scene {
         if (this.sound && this.cache.audio.exists('quiz_complete')) {
           try {
             const s = this.sound.play('quiz_complete');
-            if (!s) console.warn('[QuizPhaseScene] Falha ao iniciar som quiz_complete');
+            if (!s) {/* som não iniciou */}
           } catch (e) {
-            console.warn('[QuizPhaseScene] Erro ao tocar som quiz_complete', e);
           }
         } else {
-          // console.debug('[QuizPhaseScene] Som quiz_complete ausente ou não carregado');
+          // silencioso se som ausente
         }
         this.scene.start('ResultsScene', { scoreTotal, gameData: this.gameData });
       }
