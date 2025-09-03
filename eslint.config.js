@@ -2,7 +2,6 @@
 import js from '@eslint/js'
 import importPlugin from 'eslint-plugin-import'
 import jestPlugin from 'eslint-plugin-jest'
-import prettierPlugin from 'eslint-plugin-prettier'
 
 export default [
   {
@@ -32,8 +31,7 @@ export default [
     },
     plugins: {
       import: importPlugin,
-      jest: jestPlugin,
-      prettier: prettierPlugin
+      jest: jestPlugin
     },
     rules: {
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
@@ -42,7 +40,7 @@ export default [
       'jest/expect-expect': 'off',
       semi: ['error', 'never'],
       'no-extra-semi': 'error',
-      'prettier/prettier': ['error']
+  // Estilo básico (mantemos sem ponto e vírgula conforme já aplicado)
     }
   },
   {

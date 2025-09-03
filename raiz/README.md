@@ -74,28 +74,25 @@ Após clonar e (opcional) `npm install`:
 
 Variáveis: `PORT=9000 make run`, `DOCKER_PORT=9090 make docker-run`.
 
-## Qualidade de Código (Lint & Formatação)
+## Qualidade de Código (Lint)
 
-O projeto utiliza **ESLint (Flat Config)** integrado ao **Prettier**.
+O projeto utiliza **ESLint (Flat Config)** para padronizar estilo básico (ex: sem ponto e vírgula) e evitar problemas comuns (imports inválidos, variáveis não usadas, etc.).
 
 Scripts:
 
 ```bash
-npm run lint         # Analisa código
-npm run lint:fix     # Corrige automaticamente
-npm run format       # Verifica formatação Prettier
-npm run format:write # Aplica formatação Prettier
+npm run lint     # Analisa código
+npm run lint:fix # Corrige automaticamente
 ```
 
-Principais arquivos:
+Arquivo principal:
 
-- `eslint.config.js`: regras (semi nunca, import/no-unresolved, jest, prettier)
-- `.prettierrc.json`: singleQuote true, semi false, printWidth 100
+- `eslint.config.js`: regras (semi nunca, import/no-unresolved, jest, no-unused-vars c/ prefixo _ )
 
 Workflow sugerido antes de commit:
 
 ```bash
-npm run lint:fix && npm run format:write && npm test
+npm run lint:fix && npm test
 ```
 
 Possível melhoria futura: hook pre-commit (husky) rodando lint + testes.
@@ -107,8 +104,6 @@ npm ci
 npm run lint
 npm test
 ```
-
-Motivação: estilo consistente, evitar erros silenciosos em módulos de dados e garantir feedback rápido.
 
 Para ignorar arquivos do lint, ajustar a chave `ignores` em `eslint.config.js`.
 
