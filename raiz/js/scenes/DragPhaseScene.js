@@ -28,7 +28,7 @@ export default class DragPhaseScene extends Phaser.Scene {
       loadGameData(this.dataset || 'jogo.json')
         .then(data => {
           this.scene.restart({ gameData: data, dataset: this.dataset });
-        })
+  })
   .catch(() => {
           this.add.text(20, 50, 'Erro ao carregar dados', { fontSize: '16px', color: '#ff5555' });
         });

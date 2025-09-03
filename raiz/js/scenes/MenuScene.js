@@ -86,7 +86,7 @@ export default class MenuScene extends Phaser.Scene {
           this.titleText.text = getPath(data, 'ui.titulo', `Dataset: ${next}`);
           this.startText.setText(getPath(data, 'ui.botoes.iniciar', 'Iniciar'));
           enableStart();
-        })
+  })
   .catch(() => {
           // erro ao alternar dataset
           this.titleText.text = 'Erro ao alternar dataset';
