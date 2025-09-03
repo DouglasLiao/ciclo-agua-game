@@ -1,6 +1,6 @@
 # Ciclo da Água (Phaser 3)
 
-Jogo educativo interativo em duas fases (arrastar/associar e quiz) para reforçar os principais processos do ciclo da água.
+Jogo educativo interativo em múltiplas etapas (arrastar/associar, painel de resultados parciais e quiz) para reforçar os principais processos do ciclo da água.
 
 ## Objetivo Pedagógico
 
@@ -111,21 +111,34 @@ Para ignorar arquivos do lint, ajustar a chave `ignores` em `eslint.config.js`.
 
 ```text
 raiz/
-  index.html        # Entrada do jogo
-  jogo.json         # Conteúdo, textos, pesos de pontuação e config
-  style.css         # Estilos e alto contraste
+  index.html        # Entrada (título/ícone agora definidos dinamicamente pelo jogo.json)
+  jogo.json         # Conteúdo, textos, ícone, pesos de pontuação, config de drag/quiz
+  style.css         # Estilos e modo alto contraste
   js/
     main.js         # Configuração Phaser + registro das cenas
-    scenes/         # Boot, Menu, DragPhase, QuizPhase, Results
-    systems/        # dragSystem, quizSystem, dataLoader, util de UI
-  assets/           # (Opcional) imagens/áudios futuros
+    scenes/
+      BootScene.js       # Carrega dados, aplica acessibilidade, define título/ícone
+      MenuScene.js       # Menu inicial + troca de dataset (tecla 'D')
+      DragPhaseScene.js  # Fase de arrastar (com timer e sons)
+      DragResultScene.js # Painel intermediário de resultado do drag
+      QuizPhaseScene.js  # Fase de quiz (animações e feedback imediato)
+      ResultsScene.js    # Resultado final consolidado
+    systems/
+      dragSystem.js      # Lógica de drag & drop
+      quizSystem.js      # Lógica e UI do quiz
+      timer.js           # Componente reutilizável de contagem regressiva
+      validation.js      # Validações centralizadas (drag & quiz, cores)
+      dataLoader.js      # Cache + carregamento de JSON
+      ui.js              # Utilitário de leitura de paths
+  assets/
+    sfx/                 # Áudios (success, wrong, ui_start, quiz_complete, timer_countdown)
 ```
 
 ## Editando `jogo.json`
 
 Principais blocos:
 
-- `ui`: textos de interface (título, botões, mensagens).
+- `ui`: textos de interface (título, botões, mensagens, ícone).
 - `pontuacao`: pesos (%) de cada fase (`pesoDrag`, `pesoQuiz`). Soma recomendada = 100 (internamente normalizado 0–100).
 - `acessibilidade.altoContraste`: true/false adiciona classe CSS para maior contraste.
 - `drag`:
@@ -134,7 +147,22 @@ Principais blocos:
   - `map`: mapeia cada block -> target correto.
   - `descricoes`: texto explicativo mostrado futuramente (base para expansões).
   - (Opcional) `cores`: `acerto` e `erro` (hex ou número) para bordas de feedback.
+  - (Opcional) `tempoSegundos`: duração do temporizador da fase (default interno se ausente).
 - `quiz.perguntas[]`: cada item contém `texto`, `alternativas[]` e índice `correta`.
+
+Campos adicionais recentes:
+
+```jsonc
+"ui": {
+  "titulo": "Ciclo da Água",
+  "icone": "data:image/svg+xml,%3Csvg ...%3C/svg%3E" // (Opcional) favicon inline ou URL
+}
+
+"drag": {
+  "tempoSegundos": 60,
+  "cores": { "acerto": "#1e7d4e", "erro": "#b33939" }
+}
+```
 
 Exemplo de customização de cores (adicione dentro de `drag`):
 
@@ -164,26 +192,68 @@ Exemplo de customização de cores (adicione dentro de `drag`):
 | Robustez de dados            | `dataLoader` com cache, validação e fallback mock.                     |
 | Reinício seguro              | Botão Reiniciar recria estado mantendo JSON carregado.                 |
 | Extensibilidade              | Campos opcionais (`descricoes`, `cores`) e modularização por sistemas. |
-| Configurabilidade visual     | Cores de feedback via `drag.cores`.                                    |
 | Internacionalização futura   | Estrutura `ui.*` centraliza strings.                                   |
 
 ## Fluxo de Cenas
 
-BootScene → MenuScene → DragPhaseScene → QuizPhaseScene → ResultsScene.
+BootScene → MenuScene → DragPhaseScene → DragResultScene → QuizPhaseScene → ResultsScene.
+
+Resumo rápido:
+
+- Boot: carrega JSON, aplica alto contraste, título e ícone dinâmicos.
+- Menu: exibe título e botão iniciar.
+- Drag: arrastar blocos; timer opcional; sons de acerto/erro; ao completar (ou terminar tempo) vai para painel.
+- DragResult: mostra pontuação parcial antes de iniciar o quiz.
+- Quiz: perguntas embaralhadas (a menos de `debug`), feedback visual imediato.
+- Results: pontuação final (pesos configuráveis) e opção de recomeçar.
 
 ## Manutenção Rápida
 
 - Ajustar pesos: editar `pontuacao` em `jogo.json`.
 - Adicionar pergunta: inserir objeto em `quiz.perguntas` (garantir índice `correta`).
-- Alterar cores de feedback: incluir / modificar `drag.cores`.
 - Ativar alto contraste: `"acessibilidade": { "altoContraste": true }`.
+
+## Sistema de Áudio
+
+Chaves pré-carregadas em `BootScene`:
+
+- `success`: acerto no drag.
+- `wrong`: erro no drag.
+- `ui_start`: clique em Iniciar.
+- `quiz_complete`: conclusão do quiz (reservado para uso futuro ou efeitos finais).
+- `timer_countdown`: beep de contagem final (configurável no componente de timer).
+
+Todos são opcionais: se o asset não existir, o jogo ignora silenciosamente.
+
+## Timer Reutilizável
+
+O componente (`timer.js`) permite configurar:
+
+- `seconds` (ou usa `drag.tempoSegundos` do JSON se aplicado externamente).
+- `warnThreshold`: segundos restantes para iniciar beeps/alertas visuais.
+- `warningSoundKey`: chave de áudio (ex: `timer_countdown`).
+
+Fornece métodos: `stop()`, `getRemaining()`, `isEnded()`.
+
+## Validações Centralizadas
+
+Arquivo `validation.js` concentra:
+
+- Normalização de cores (`normalizeColor`).
+- Validação de posicionamento de blocos (`validateBlockPlacement`).
+- Cálculo de progresso do drag (`validateDragPhase`).
+- Avaliação de quiz (`validateQuizAnswer`, `validationQuiz`).
+
+Facilita testes unitários isolados e mantém `dragSystem` / `quizSystem` mais enxutos.
 
 ## Próximas Extensões Sugeridas
 
 - Exibir `descricoes` ao concluir cada target.
-- Suporte teclado / leitor de tela (focus ring + aria-labels).
+- Suporte total a teclado / leitor de tela (focus ring avançado + labels ARIA).
 - Persistência de melhor pontuação (localStorage).
-- Inserir botão para o reinicio da atividade
+- Chamadas de internacionalização (`i18n.js`) usando chaves em `jogo.json`.
+- Botão de reinício rápido visível em todas as fases.
+- Barra de progresso temporal / visual além do texto do timer.
 
 ## Licença
 
