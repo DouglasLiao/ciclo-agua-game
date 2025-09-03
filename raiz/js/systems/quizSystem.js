@@ -168,9 +168,10 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
     // - Botão correto: verde
     // - Botão escolhido errado (se houver): vermelho
     // - Demais: manter azul padrão
-    const COLOR_CORRECT = '#1e7d4e';
-    const COLOR_WRONG = '#b33939';
-    const COLOR_DEFAULT = '#4ec2f0';
+  const highContrast = (typeof document !== 'undefined') && document.body.classList.contains('alto-contraste');
+  const COLOR_CORRECT = highContrast ? '#00aa00' : '#1e7d4e'; // verde mais claro para contraste AA
+  const COLOR_WRONG = highContrast ? '#ff2222' : '#b33939';   // vermelho mais vivo
+  const COLOR_DEFAULT = highContrast ? '#0088ff' : '#4ec2f0';
 
     // Mostrar feedback imediato e seguir independente de acerto
     buttons.forEach((b, i) => {

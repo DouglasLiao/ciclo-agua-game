@@ -14,6 +14,30 @@ export function createDragSystem(scene, { targets, blocks, map }, { onScoreChang
     map
   };
 
+  // Cor da borda de acerto (pode vir como string '#rrggbb' ou número)
+  let corBordaAcerto = scene?.gameData?.drag?.cores?.acerto;
+  let corBordaErro = scene?.gameData?.drag?.cores?.erro;
+  if (typeof corBordaAcerto === 'string') {
+    if (corBordaAcerto.startsWith('#')) {
+      const hex = corBordaAcerto.substring(1);
+      const num = parseInt(hex, 16);
+      if (!Number.isNaN(num)) corBordaAcerto = num;
+    }
+  }
+  if (typeof corBordaErro === 'string') {
+    if (corBordaErro.startsWith('#')) {
+      const hex = corBordaErro.substring(1);
+      const num = parseInt(hex, 16);
+      if (!Number.isNaN(num)) corBordaErro = num;
+    }
+  }
+  if (typeof corBordaAcerto !== 'number') {
+    corBordaAcerto = 0x1e7d4e; // default
+  }
+  if (typeof corBordaErro !== 'number') {
+    corBordaErro = 0xb33939; // default vermelho
+  }
+
   const targetByName = Object.fromEntries(targets.map(t => [t.name, t]));
 
   // Facilita teste de overlap
@@ -44,7 +68,9 @@ export function createDragSystem(scene, { targets, blocks, map }, { onScoreChang
       rect,
       originalPos,
       placed: false,
-      target: null
+      target: null,
+      originalStrokeColor: rect.strokeColor,
+      originalLineWidth: rect.lineWidth || 2
     };
     state.blocks.push(blockState);
   });
@@ -78,7 +104,8 @@ export function createDragSystem(scene, { targets, blocks, map }, { onScoreChang
         gameObject.y = overlap.rect.y;
         blk.placed = true;
         blk.target = overlap.name;
-        gameObject.setFillStyle(0x1e7d4e, 0.85);
+        // Apenas borda verde (sem alterar fill existente)
+        gameObject.setStrokeStyle(4, corBordaAcerto, 1);
         state.score += 1;
         if (onScoreChange) onScoreChange(state.score, state);
         // Desativa interação futura
@@ -90,10 +117,12 @@ export function createDragSystem(scene, { targets, blocks, map }, { onScoreChang
         return;
       }
     }
-    // Caso incorreto ou sem alvo: shake simples + retorno à origem
+    // Caso incorreto ou sem alvo: shake simples + retorno à origem + borda vermelha temporária
     const origin = blk.originalPos;
     const originalX = gameObject.x;
     const shakeAmp = 12;
+    // aplica borda vermelha mais grossa
+    gameObject.setStrokeStyle(4, corBordaErro, 1);
     scene.tweens.add({
       targets: gameObject,
       x: originalX + shakeAmp,
@@ -108,6 +137,12 @@ export function createDragSystem(scene, { targets, blocks, map }, { onScoreChang
           y: origin.y,
             duration: 200,
             ease: 'Sine.easeOut'
+        , onComplete: () => {
+            // restaura borda original se ainda não colocado
+            if (!blk.placed) {
+              gameObject.setStrokeStyle(blk.originalLineWidth, blk.originalStrokeColor, 1);
+            }
+          }
         });
       }
     });

@@ -27,6 +27,15 @@ export default class BootScene extends Phaser.Scene {
       console.error('[BootScene] Falha ao carregar jogo.json', e);
       this.gameData = {};
     }
+    // Acessibilidade: alto contraste
+    try {
+      const alto = this.gameData?.acessibilidade?.altoContraste;
+      if (typeof document !== 'undefined' && document.body) {
+        document.body.classList.toggle('alto-contraste', !!alto);
+      }
+    } catch (e) {
+      console.warn('[BootScene] Não foi possível aplicar alto contraste', e);
+    }
     // Removido decodeAudio manual: Phaser já decodifica automaticamente quando necessário.
     if (this.sound && this.cache.audio.exists('quiz_complete')) {
       console.debug('[BootScene] Áudio quiz_complete carregado (decodificação automática)');

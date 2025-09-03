@@ -116,7 +116,6 @@ function mockGameData() {
         carregando: 'Carregando...',
         iniciando: 'Iniciando...',
         falhaCarregar: 'Erro ao carregar dados',
-        pontuacao: 'Pontuação',
         faseDrag: 'Fase de Arrastar',
         faseQuiz: 'Fase de Quiz',
         todosColocados: 'Todos posicionados! Avançando...',
