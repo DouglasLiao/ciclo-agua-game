@@ -31,6 +31,50 @@ npx serve .
 
 Sem dependências de build: usa ES Modules direto no navegador moderno.
 
+### Executar via Docker
+
+Build da imagem:
+
+```bash
+docker build -t ciclo-agua-game .
+```
+
+Rodar container (porta 8080):
+
+```bash
+docker run --rm -p 8080:8080 ciclo-agua-game
+```
+
+Acesse: <http://localhost:8080/>
+
+Customizar porta:
+
+```bash
+docker run --rm -e PORT=9090 -p 9090:9090 ciclo-agua-game
+```
+
+Atualizar código (dev rápido): montar bind local:
+
+```bash
+docker run --rm -p 8080:8080 -v "$(pwd)/raiz":/app/raiz ciclo-agua-game
+```
+
+### Makefile (atalhos)
+
+Após clonar e (opcional) `npm install`:
+
+| Comando | Ação |
+|---------|------|
+| `make run` | Servidor Python em :8000 (PORT variável) |
+| `make test` | Roda Jest |
+| `make docker-build` | Build imagem Docker |
+| `make docker-run` | Executa imagem na porta 8080 (DOCKER_PORT) |
+| `make docker-dev` | Roda Docker montando pasta local |
+| `make clean-node` | Remove node_modules e lock |
+| `make ci` | Instala dependências + testes |
+
+Variáveis: `PORT=9000 make run`, `DOCKER_PORT=9090 make docker-run`.
+
 ## Estrutura de Pastas
  
 ```text
