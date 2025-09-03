@@ -1,3 +1,5 @@
+import { normalizeColor, validateBlockPlacement, validateDragPhase } from './validation.js'
+
 // Sistema de drag & drop para blocos em alvos nomeados.
 // createDragSystem(scene, { targets, blocks, map }, callbacks)
 // - targets: [{ name, rect }]
@@ -18,29 +20,9 @@ export function createDragSystem(
     map
   }
 
-  // Cor da borda de acerto (pode vir como string '#rrggbb' ou número)
-  let corBordaAcerto = scene?.gameData?.drag?.cores?.acerto
-  let corBordaErro = scene?.gameData?.drag?.cores?.erro
-  if (typeof corBordaAcerto === 'string') {
-    if (corBordaAcerto.startsWith('#')) {
-      const hex = corBordaAcerto.substring(1)
-      const num = parseInt(hex, 16)
-      if (!Number.isNaN(num)) corBordaAcerto = num
-    }
-  }
-  if (typeof corBordaErro === 'string') {
-    if (corBordaErro.startsWith('#')) {
-      const hex = corBordaErro.substring(1)
-      const num = parseInt(hex, 16)
-      if (!Number.isNaN(num)) corBordaErro = num
-    }
-  }
-  if (typeof corBordaAcerto !== 'number') {
-    corBordaAcerto = 0x1e7d4e // default
-  }
-  if (typeof corBordaErro !== 'number') {
-    corBordaErro = 0xb33939 // default vermelho
-  }
+  // Normalização de cores via util extraída
+  const corBordaAcerto = normalizeColor(scene?.gameData?.drag?.cores?.acerto, 0x1e7d4e)
+  const corBordaErro = normalizeColor(scene?.gameData?.drag?.cores?.erro, 0xb33939)
 
   const _targetByName = Object.fromEntries(targets.map((t) => [t.name, t])) // reservado para uso futuro
 
@@ -103,8 +85,8 @@ export function createDragSystem(
     if (!blk || blk.placed) return
     const overlap = getOverlapTarget(gameObject)
     if (overlap) {
-      const expectedTargetName = map[blk.label]
-      if (expectedTargetName && overlap.name === expectedTargetName) {
+      const { correct } = validateBlockPlacement(map, blk.label, overlap.name)
+      if (correct) {
         // Snap ao alvo
         gameObject.x = overlap.rect.x
         gameObject.y = overlap.rect.y
@@ -112,7 +94,7 @@ export function createDragSystem(
         blk.target = overlap.name
         // Apenas borda verde (sem alterar fill existente)
         gameObject.setStrokeStyle(4, corBordaAcerto, 1)
-        state.score += 1
+        state.score = validateDragPhase(state.blocks)
         // Som de acerto
         if (scene.sound && scene.cache.audio.exists('success')) {
           try {

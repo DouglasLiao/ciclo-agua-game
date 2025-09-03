@@ -1,3 +1,5 @@
+import { validateQuizAnswer, validationQuiz } from './validation.js'
+
 // Sistema de quiz: apresenta perguntas e avalia respostas.
 export function presentQuiz(scene, questions) {
   return { questions, answers: [] }
@@ -5,11 +7,8 @@ export function presentQuiz(scene, questions) {
 
 export function evaluateQuiz(state) {
   if (!state.questions) return 0
-  let score = 0
-  state.questions.forEach((q, i) => {
-    if (state.answers[i] && state.answers[i] === q.correct) score++
-  })
-  return score
+  const r = validationQuiz(state.questions, state.answers || [])
+  return r.acertos
 }
 
 // Função utilitária para calcular score final do quiz a partir do resultado ({ acertos })
@@ -195,7 +194,7 @@ export function startQuiz(
     const p = state.perguntas[state.indice]
     state.respostas[state.indice] = idx
     state.locked = true
-    const isCorrect = idx === p.correct
+  const { correct: isCorrect } = validateQuizAnswer(p, idx)
     if (onAnswer) onAnswer({ index: state.indice, option: idx, correct: isCorrect }, state)
     if (isCorrect) {
       state.acertosParciais += 1
@@ -277,11 +276,8 @@ export function startQuiz(
   function finalizar() {
     if (state.disposed) return
     state.concluido = true
-    const acertos = state.perguntas.reduce(
-      (acc, p, i) => acc + (state.respostas[i] === p.correct ? 1 : 0),
-      0
-    )
-    if (onFinish) onFinish({ acertos }, state)
+  const { acertos } = validationQuiz(state.perguntas, state.respostas)
+  if (onFinish) onFinish({ acertos }, state)
     // Bloquear interação
     buttons.forEach((b) => b.disableInteractive())
   }
