@@ -13,7 +13,20 @@
 
 export function createCountdown(
   scene,
-  { seconds = 60, x = 0, y = 0, label = 'Tempo', warnThreshold = 10, onTick, onExpire, style = {} } = {}
+  {
+    seconds = 60,
+    x = 0,
+    y = 0,
+    label = 'Tempo',
+    warnThreshold = 10,
+    onTick,
+    onExpire,
+    style = {},
+    playWarningSound = true,
+    warningSoundKey = 'countdown_beeps',
+    warningVolume = 0.25,
+    stopAfterFirstBeep = false
+  } = {}
 ) {
   let total = parseInt(seconds, 10)
   if (Number.isNaN(total) || total <= 0) total = 60
@@ -22,6 +35,7 @@ export function createCountdown(
 
   const textStyle = Object.assign({ fontSize: '18px', color: '#ffffff' }, style)
   const text = scene.add.text(x, y, `${label}: ${remaining}s`, textStyle)
+  let warningSound = null
 
   function updateDisplay() {
     text.setText(`${label}: ${remaining}s`)
@@ -35,6 +49,25 @@ export function createCountdown(
     remaining -= 1
     updateDisplay()
     if (onTick) onTick({ remaining, total, text })
+    // Toca som opcional nos últimos segundos
+    if (playWarningSound && remaining <= warnThreshold && remaining > 0) {
+      if (scene.sound && scene.cache.audio.exists(warningSoundKey)) {
+        try {
+          if (!warningSound) {
+            warningSound = scene.sound.add(warningSoundKey)
+          }
+          if (warningSound.isPlaying) warningSound.stop() // reinicia para beep curto sincronizado
+          warningSound.play({ volume: warningVolume })
+          if (stopAfterFirstBeep) {
+            stop('interrompido-apos-beep')
+            if (onExpire) onExpire()
+            return
+          }
+        } catch (_) {
+          /* ignore */
+        }
+      }
+    }
     if (remaining <= 0) {
       stop('tempo-esgotado')
       if (onExpire) onExpire()
@@ -55,6 +88,7 @@ export function createCountdown(
     ended = true
     tickEvent.remove(false)
     hardTimeout.remove(false)
+  if (warningSound && warningSound.isPlaying) warningSound.stop()
     // Congela cor final se acabou por tempo
     if (reason === 'tempo-esgotado') text.setColor('#ff5555')
   }
@@ -67,6 +101,7 @@ export function createCountdown(
     stop,
     getRemaining: () => remaining,
     isEnded: () => ended,
-    text
+    text,
+    getWarningSound: () => warningSound
   }
 }
