@@ -1,4 +1,4 @@
-import { validateAndFilter, _validateGameDataForTests } from './schemaValidation.js'
+import { validateAndFilter } from './schemaValidation.js'
 
 // dataLoader com cache por URL e suporte a dataset dinâmico via env / query.
 const _cache = new Map() // url -> data
