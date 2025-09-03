@@ -5,6 +5,7 @@
 import BootScene from './scenes/BootScene.js'
 import MenuScene from './scenes/MenuScene.js'
 import DragPhaseScene from './scenes/DragPhaseScene.js'
+import DragResultScene from './scenes/DragResultScene.js'
 import QuizPhaseScene from './scenes/QuizPhaseScene.js'
 import ResultsScene from './scenes/ResultsScene.js'
 
@@ -22,7 +23,7 @@ const config = {
     default: 'arcade',
     arcade: { debug: false, gravity: { y: 0 } }
   },
-  scene: [BootScene, MenuScene, DragPhaseScene, QuizPhaseScene, ResultsScene]
+  scene: [BootScene, MenuScene, DragPhaseScene, DragResultScene, QuizPhaseScene, ResultsScene]
 }
 
 function applyLetterbox(game) {

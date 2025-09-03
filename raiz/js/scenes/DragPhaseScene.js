@@ -104,19 +104,10 @@ export default class DragPhaseScene extends Phaser.Scene {
           }
         },
         onAllPlaced: (state) => {
-          // Pequeno feedback visual antes da transição
-          const msg = getPath(
-            this.gameData,
-            'ui.mensagens.todosColocados',
-            'Todos posicionados! Avançando...'
-          )
-          this.add.text(20, 80, msg, { fontSize: '18px', color: '#ffffff' })
-          this.time.delayedCall(1000, () => {
-            this.scene.start('QuizPhaseScene', {
-              dragAcertos: state.score,
-              dragTotal: state.total,
-              gameData: this.gameData
-            })
+          this.scene.start('DragResultScene', {
+            dragAcertos: state.score,
+            dragTotal: state.total,
+            gameData: this.gameData
           })
         }
       }
