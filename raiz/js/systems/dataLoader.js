@@ -120,8 +120,6 @@ function mockGameData() {
         faseDrag: 'Fase de Arrastar',
         faseQuiz: 'Fase de Quiz',
         todosColocados: 'Todos posicionados! Avançando...',
-        parcial: 'Parcial',
-        acertosQuiz: 'Acertos Quiz',
         resultadoTitulo: 'Resultados'
       }
     },

@@ -14,7 +14,8 @@ export default class ResultsScene extends Phaser.Scene {
     const title = getUI(gameData, 'results.title', 'Resultados');
     const scoreLabel = getUI(gameData, 'common.scoreLabel', 'Pontuação');
     this.add.text(centerX, centerY - 20, title, { fontSize: '48px', color: '#ffffff' }).setOrigin(0.5);
-  this.add.text(centerX, centerY + 40, `${scoreLabel}: ${this.score}`, { fontSize: '32px', color: '#4ec2f0' }).setOrigin(0.5);
+    const scoreDisplay = Math.round(this.score);
+    this.add.text(centerX, centerY + 40, `${scoreLabel}: ${scoreDisplay}`, { fontSize: '32px', color: '#4ec2f0' }).setOrigin(0.5);
 
     this.input.keyboard.once('keydown-SPACE', () => {
       this.scene.start('MenuScene');

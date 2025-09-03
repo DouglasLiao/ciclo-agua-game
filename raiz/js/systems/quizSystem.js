@@ -13,9 +13,17 @@ export function evaluateQuiz(state) {
 }
 
 // Função utilitária para calcular score final do quiz a partir do resultado ({ acertos })
-export function computeScoreQuiz(result) {
-  if (!result || typeof result.acertos !== 'number') return 0;
-  return result.acertos; // Futuro: aplicar pesos ou normalização
+export function computeScoreQuiz(result, totalPerguntas, pesoQuiz = 50) {
+  if (!result || typeof result.acertos !== 'number' || !totalPerguntas) return 0;
+  const ratio = Math.max(0, Math.min(1, result.acertos / totalPerguntas));
+  return ratio * pesoQuiz;
+}
+
+// Drag: score bruto = acertos (itens corretos). totalDrag = total blocos.
+export function computeScoreDrag(acertosDrag, totalDrag, pesoDrag = 50) {
+  if (!totalDrag) return 0;
+  const ratio = Math.max(0, Math.min(1, acertosDrag / totalDrag));
+  return ratio * pesoDrag;
 }
 
 // startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange, debug })

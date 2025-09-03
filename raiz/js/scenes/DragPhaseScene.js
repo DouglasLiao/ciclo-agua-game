@@ -11,8 +11,6 @@ export default class DragPhaseScene extends Phaser.Scene {
   create() {
   // HUD
   this.score = 0;
-  const scoreLabel = getUI(this.gameData, 'common.scoreLabel', 'Pontuação');
-  this.scoreText = this.add.text(20, 20, `${scoreLabel}: 0`, { fontSize: '20px', color: '#ffffff' });
   const dragTitle = getUI(this.gameData, 'drag.title', 'Fase de Arrastar');
   this.add.text(20, 48, dragTitle, { fontSize: '20px', color: '#4ec2f0' });
 
@@ -52,16 +50,12 @@ export default class DragPhaseScene extends Phaser.Scene {
       this,
       { targets: this.targets, blocks: this.blocks, map: mapping },
       {
-        onScoreChange: (score) => {
-          this.score = score;
-          this.scoreText.setText(`${scoreLabel}: ${score}`);
-        },
         onAllPlaced: (state) => {
           // Pequeno feedback visual antes da transição
           const msg = getUI(this.gameData, 'drag.allPlacedMessage', 'Todos posicionados! Avançando...');
           this.add.text(20, 80, msg, { fontSize: '18px', color: '#ffffff' });
           this.time.delayedCall(1000, () => {
-            this.scene.start('QuizPhaseScene', { scoreParcial: state.score, gameData: this.gameData });
+            this.scene.start('QuizPhaseScene', { dragAcertos: state.score, dragTotal: state.total, gameData: this.gameData });
           });
         }
       }
