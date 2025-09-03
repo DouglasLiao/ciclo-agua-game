@@ -47,11 +47,19 @@ export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange,
     }
     return { text, options, correct };
   });
+  // Embaralha a ordem das perguntas (mantendo índice da correta) e também as alternativas de cada uma.
   let shuffledPerguntas;
   if (debug) {
     shuffledPerguntas = normalizadas.map(p => ({ ...p }));
   } else {
-    shuffledPerguntas = normalizadas.map(orig => {
+    // Shuffle de perguntas (Fisher-Yates)
+    const questionsShuffled = [...normalizadas];
+    for (let i = questionsShuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [questionsShuffled[i], questionsShuffled[j]] = [questionsShuffled[j], questionsShuffled[i]];
+    }
+    // Agora shuffle de alternativas por pergunta
+    shuffledPerguntas = questionsShuffled.map(orig => {
       const optionsWithIndex = orig.options.map((opt, idx) => ({ opt, originalIndex: idx }));
       for (let i = optionsWithIndex.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
