@@ -174,7 +174,7 @@ Exemplo de customização de cores (adicione dentro de `drag`):
 
 ## Fluxo de Cenas
 
-BootScene → MenuScene → DragPhaseScene → QuizPhaseScene → ResultsScene (reinício volta ao Menu).
+BootScene → MenuScene → DragPhaseScene → QuizPhaseScene → ResultsScene.
 
 ## Manutenção Rápida
 
@@ -188,6 +188,7 @@ BootScene → MenuScene → DragPhaseScene → QuizPhaseScene → ResultsScene (
 - Exibir `descricoes` ao concluir cada target.
 - Suporte teclado / leitor de tela (focus ring + aria-labels).
 - Persistência de melhor pontuação (localStorage).
+- Inserir botão para o reinicio da atividade
 
 ## Licença
 
