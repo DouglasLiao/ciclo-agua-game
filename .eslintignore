@@ -1,0 +1,6 @@
+node_modules/
+coverage/
+raiz/assets/
+assets/
+dist/
+build/
