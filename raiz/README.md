@@ -254,6 +254,7 @@ Facilita testes unitários isolados e mantém `dragSystem` / `quizSystem` mais e
 - Chamadas de internacionalização (`i18n.js`) usando chaves em `jogo.json`.
 - Botão de reinício rápido visível em todas as fases.
 - Barra de progresso temporal / visual além do texto do timer.
+- Possível melhoria na interface.
 
 ## Licença
 
