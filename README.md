@@ -3,7 +3,7 @@
 Este é o repositório do projeto desenvolvido para a prova técnica.  
 
 📖 A documentação completa está disponível em:  
-➡️ [README detalhado](./docs/README.md)  
+➡️ [README detalhado](https://github.com/DouglasLiao/ciclo-agua-game/tree/master/raiz)  
 
 ---
 
