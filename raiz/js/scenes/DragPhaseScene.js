@@ -29,7 +29,7 @@ export default class DragPhaseScene extends Phaser.Scene {
         .then(data => {
           this.scene.restart({ gameData: data, dataset: this.dataset });
         })
-        .catch(err => {
+  .catch(_err => {
           this.add.text(20, 50, 'Erro ao carregar dados', { fontSize: '16px', color: '#ff5555' });
         });
       return; // evita continuar sem dados

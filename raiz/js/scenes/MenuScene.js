@@ -1,6 +1,5 @@
-/* global Phaser */
 import { loadGameData, invalidateGameDataCache } from '../systems/dataLoader.js';
-import { getUI, getPath } from '../systems/ui.js';
+import { getPath } from '../systems/ui.js';
 
 export default class MenuScene extends Phaser.Scene {
   constructor() { super('MenuScene'); }
@@ -33,10 +32,10 @@ export default class MenuScene extends Phaser.Scene {
       this.startText.setColor('#cccccc');
       this.startText.text = getPath(this.gameData || this.initialGameData, 'ui.mensagens.iniciando', 'Iniciando...');
       try {
-        if (!this.gameDataPromise) this.gameDataPromise = loadGameData(this.currentDataset).catch(e => { throw e; });
+        if (!this.gameDataPromise) this.gameDataPromise = loadGameData(this.currentDataset).catch(err => { throw err; });
         const data = await this.gameDataPromise;
         this.scene.start('DragPhaseScene', { gameData: data });
-      } catch (e) {
+      } catch (_err) {
         this.startText.setColor('#ff5555');
         this.startText.text = getPath(this.gameData, 'ui.mensagens.falhaCarregar', 'Falha - tentar?');
               this.transitioning = false;
@@ -56,7 +55,7 @@ export default class MenuScene extends Phaser.Scene {
             this.startText.setText(getPath(data, 'ui.botoes.iniciar', 'Iniciar'));
             enableStart();
           })
-          .catch(e => {
+          .catch(() => {
             // falha ao carregar dataset
             this.titleText.text = getPath(this.initialGameData, 'ui.mensagens.falhaCarregar', 'Erro ao carregar');
             this.startText.setColor('#ff5555');
@@ -88,7 +87,7 @@ export default class MenuScene extends Phaser.Scene {
           this.startText.setText(getPath(data, 'ui.botoes.iniciar', 'Iniciar'));
           enableStart();
         })
-        .catch(err => {
+  .catch(() => {
           // erro ao alternar dataset
           this.titleText.text = 'Erro ao alternar dataset';
           this.startText.setColor('#ff5555');

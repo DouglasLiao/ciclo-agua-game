@@ -28,11 +28,8 @@ export default class QuizPhaseScene extends Phaser.Scene {
         if (this.sound && this.cache.audio.exists('quiz_complete')) {
           try {
             const s = this.sound.play('quiz_complete');
-            if (!s) {/* som não iniciou */}
-          } catch (e) {
-          }
-        } else {
-          // silencioso se som ausente
+            if (!s) { /* som não iniciou */ }
+          } catch (_err) { /* ignore */ }
         }
         this.scene.start('ResultsScene', { scoreTotal, gameData: this.gameData });
       }

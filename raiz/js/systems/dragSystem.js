@@ -38,7 +38,7 @@ export function createDragSystem(scene, { targets, blocks, map }, { onScoreChang
     corBordaErro = 0xb33939; // default vermelho
   }
 
-  const targetByName = Object.fromEntries(targets.map(t => [t.name, t]));
+  const _targetByName = Object.fromEntries(targets.map(t => [t.name, t])); // reservado para uso futuro
 
   // Facilita teste de overlap
   function getOverlapTarget(blockRect) {
