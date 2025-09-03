@@ -40,6 +40,10 @@
       "Condensação": "O vapor de água sobe e, ao encontrar camadas frias da atmosfera, se resfria, formando as nuvens.",
       "Precipitação": "Quando as nuvens estão carregadas de vapor, a água retorna à superfície da Terra em forma de chuva, neve ou granizo.",
       "Infiltração": "Parte da água da precipitação penetra no solo, abastecendo os lençóis freáticos e alimentando nascentes e aquíferos."
+    },
+    "cores": {
+      "acerto": "#1e7d4e",
+      "erro": "#b33939"
     }
   },
   "quiz": {

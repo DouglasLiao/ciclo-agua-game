@@ -27,6 +27,7 @@ Textos de interface.
 ```jsonc
 "ui": {
   "titulo": "Ciclo da Água",
+  "icone": "data:image/svg+xml,...", // OPCIONAL: favicon (data URI ou URL)
   "botoes": {
     "iniciar": "Iniciar",
     "reiniciar": "Reiniciar",
@@ -49,6 +50,7 @@ Textos de interface.
 Regras:
 
 - `titulo`: string obrigatória.
+- `icone`: opcional; se presente string (data URI ou URL absoluta/relativa). Não validado atualmente pelo loader.
 - `botoes`: objeto opcional; chaves livres (cada valor string).
 - `mensagens`: objeto opcional; chaves livres (cada valor string).
 
@@ -97,7 +99,8 @@ Regras:
   "cores": {               // OPCIONAL (pode não existir)
     "acerto": "#1e7d4e",  // hex ou número; cor da borda ao acertar
     "erro": "#cc2222"     // hex ou número; cor temporária ao errar
-  }
+  },
+  "tempoSegundos": 60      // OPCIONAL: duração do timer da fase de arrastar
 }
 ```
 
@@ -108,6 +111,7 @@ Regras:
 - `map`: objeto (cada chave = um item de `blocks`, valor = nome de target correto) — _não validamos se todos os blocks possuem entry mas recomendado_.
 - `descricoes`: objeto (chave = nome de target, valor = string explicativa). Pode conter subset.
 - `cores` (opcional): se presente, cada chave deve ser string (#hex) ou número inteiro (0xRRGGBB). Valores inválidos são ignorados e defaults aplicados.
+- `tempoSegundos` (opcional): número inteiro > 0. Não é validado pelo loader; se ausente o timer usa valor padrão configurado na cena/componente.
 
 ## 6. quiz
 
@@ -137,25 +141,27 @@ A função interna `validateAndFilter` (exposta em testes como `_validateGameDat
 | Campo / Regra               | Erro Gatilho (trecho da mensagem)                   |
 | --------------------------- | --------------------------------------------------- |
 | Objeto raiz não objeto      | `Objeto raiz inválido`                              |
-| `ui` ausente                | `ui ausente`                                        |
-| `ui.titulo` não string      | `ui.titulo ausente`                                 |
-| `pontuacao` ausente         | `pontuacao ausente`                                 |
+| `ui` ausente                | `ui ausente ou não é objeto`                       |
+| `ui.titulo` não string      | `ui.titulo ausente ou não string`                  |
+| `pontuacao` ausente         | `pontuacao ausente ou não objeto`                  |
 | `pesoDrag` não número       | `pontuacao.pesoDrag deve ser número`                |
 | `pesoQuiz` não número       | `pontuacao.pesoQuiz deve ser número`                |
-| `acessibilidade` ausente    | `acessibilidade ausente`                            |
+| `acessibilidade` ausente    | `acessibilidade ausente ou não objeto`             |
 | `altoContraste` não boolean | `acessibilidade.altoContraste deve ser boolean`     |
-| `drag` ausente              | `drag ausente`                                      |
+| `drag` ausente              | `drag ausente ou não objeto`                       |
 | `drag.targets` vazio        | `drag.targets deve ser array não vazio`             |
 | `drag.blocks` vazio         | `drag.blocks deve ser array não vazio`              |
-| `drag.map` ausente          | `drag.map ausente`                                  |
-| `drag.descricoes` ausente   | `drag.descricoes ausente`                           |
-| `quiz` ausente              | `quiz ausente`                                      |
+| `drag.map` ausente          | `drag.map ausente ou não objeto`                    |
+| `drag.descricoes` ausente   | `drag.descricoes ausente ou não objeto`             |
+| `quiz` ausente              | `quiz ausente ou não objeto`                       |
 | `quiz.perguntas` vazio      | `quiz.perguntas deve ser array não vazio`           |
 | Pergunta não objeto         | `quiz.perguntas[i] não é objeto`                    |
 | `texto` ausente             | `quiz.perguntas[i].texto deve ser string`           |
 | `alternativas` inválido     | `quiz.perguntas[i].alternativas deve ter >=2 itens` |
 | `correta` não numérico      | `quiz.perguntas[i].correta deve ser número`         |
 | `correta` fora do intervalo | `quiz.perguntas[i].correta fora do intervalo`       |
+
+Campos não validados explicitamente (tratados como opcionais e ignorados se ausentes): `ui.icone`, `drag.tempoSegundos`, `drag.cores`.
 
 Observação: erros de `cores` não interrompem a carga — fallback padrão é aplicado silenciosamente.
 
@@ -219,4 +225,4 @@ Segue a licença geral do projeto (MIT) — esse documento pode ser reutilizado 
 
 ---
 
-_Última atualização: sincronizado com regras de `dataLoader.js` na branch master._
+_Última atualização: sincronizado com regras de `dataLoader.js` + novos campos opcionais (`ui.icone`, `drag.tempoSegundos`) em 2025-09-03._

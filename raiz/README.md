@@ -146,8 +146,8 @@ Principais blocos:
   - `blocks`: peças arrastáveis exibidas ao jogador.
   - `map`: mapeia cada block -> target correto.
   - `descricoes`: texto explicativo mostrado futuramente (base para expansões).
-  - (Opcional) `cores`: `acerto` e `erro` (hex ou número) para bordas de feedback.
-  - (Opcional) `tempoSegundos`: duração do temporizador da fase (default interno se ausente).
+  - `cores` (opcional): objetos de cores de feedback (`acerto`, `erro`). Se omitido, usa defaults internos (verde 0x1e7d4e, vermelho 0xb33939).
+  - `tempoSegundos` (opcional): duração do temporizador da fase (default interno se ausente).
 - `quiz.perguntas[]`: cada item contém `texto`, `alternativas[]` e índice `correta`.
 
 Campos adicionais recentes:
