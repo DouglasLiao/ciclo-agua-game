@@ -22,4 +22,4 @@ Guia rápido de verificação de qualidade para o jogo Ciclo da Água.
 
 ## Observações
 
-(Adicionar aqui logs de console relevantes, métricas de FPS ou capturas de tela.)
+Nenhuma observação adicional
