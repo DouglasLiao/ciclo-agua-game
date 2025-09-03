@@ -38,6 +38,16 @@ export default class BootScene extends Phaser.Scene {
       if (typeof document !== 'undefined') {
         const titulo = this.gameData?.ui?.titulo || 'Jogo'
         document.title = titulo
+        const iconUrl = this.gameData?.ui?.icone
+        if (iconUrl) {
+          let link = document.querySelector("link[rel='icon']")
+          if (!link) {
+            link = document.createElement('link')
+            link.rel = 'icon'
+            document.head.appendChild(link)
+          }
+          link.href = iconUrl
+        }
       }
     } catch (_) { /* ignore */ }
     // Acessibilidade: alto contraste
