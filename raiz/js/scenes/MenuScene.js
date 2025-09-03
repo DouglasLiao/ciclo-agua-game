@@ -34,6 +34,11 @@ export default class MenuScene extends Phaser.Scene {
     const attemptStart = async () => {
       if (!this.startEnabled || this.transitioning) return
       this.transitioning = true
+      if (this.sound && this.cache.audio.exists('ui_start')) {
+        try {
+          this.sound.play('ui_start', { volume: 0.6 })
+        } catch (_) { /* ignore */ }
+      }
       this.startText.setColor('#cccccc')
       this.startText.text = getPath(
         this.gameData || this.initialGameData,

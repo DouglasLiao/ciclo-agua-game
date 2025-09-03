@@ -113,6 +113,12 @@ export function createDragSystem(
         // Apenas borda verde (sem alterar fill existente)
         gameObject.setStrokeStyle(4, corBordaAcerto, 1)
         state.score += 1
+        // Som de acerto
+        if (scene.sound && scene.cache.audio.exists('success')) {
+          try {
+            scene.sound.play('success', { volume: 0.5 })
+          } catch (_) {/* ignore */}
+        }
         if (onScoreChange) onScoreChange(state.score, state, { correct: true })
         // Desativa interação futura
         gameObject.disableInteractive()
@@ -130,6 +136,12 @@ export function createDragSystem(
     // aplica borda vermelha mais grossa
     gameObject.setStrokeStyle(4, corBordaErro, 1)
     if (onScoreChange) onScoreChange(state.score, state, { correct: false, error: true })
+    // Som de erro
+    if (scene.sound && scene.cache.audio.exists('wrong')) {
+      try {
+        scene.sound.play('wrong', { volume: 0.5 })
+      } catch (_) {/* ignore */}
+    }
     scene.tweens.add({
       targets: gameObject,
       x: originalX + shakeAmp,

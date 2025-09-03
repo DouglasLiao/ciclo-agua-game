@@ -11,8 +11,10 @@ export default class BootScene extends Phaser.Scene {
     // Som opcional de conclusão do quiz (coloque pelo menos um dos formatos abaixo)
     // Suporte multi-formato para compatibilidade cross-browser
   this.load.audio('quiz_complete', ['assets/sfx/complete.wav'])
-  // Áudio curto para contagem regressiva final (últimos segundos)
-  this.load.audio('countdown_beeps', ['assets/sfx/countdown_beeps.wav'])
+  this.load.audio('timer_countdown', ['assets/sfx/timer_countdown.wav'])
+  this.load.audio('success', ['assets/sfx/success.wav'])
+  this.load.audio('wrong', ['assets/sfx/wrong.wav'])
+  this.load.audio('ui_start', ['assets/sfx/start.wav'])
   }
   async create() {
     // Detecta dataset via query (?data=arquivo.json ou ?jogo=arquivo.json)

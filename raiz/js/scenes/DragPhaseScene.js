@@ -94,7 +94,7 @@ export default class DragPhaseScene extends Phaser.Scene {
 
     // ========= Temporizador componentizado =========
     const tempoLabel = getPath(this.gameData, 'ui.mensagens.tempo', 'Tempo')
-    const tempoSegundos = getPath(this.gameData, 'drag.tempoSegundos', 15)
+    const tempoSegundos = getPath(this.gameData, 'drag.tempoSegundos', 60)
 
     // Finalização única (reutilizada pelo timer e pelo onAllPlaced)
     this._ended = false

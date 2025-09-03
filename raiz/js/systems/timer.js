@@ -23,7 +23,7 @@ export function createCountdown(
     onExpire,
     style = {},
     playWarningSound = true,
-    warningSoundKey = 'countdown_beeps',
+    warningSoundKey = 'timer_countdown',
     warningVolume = 0.25,
     stopAfterFirstBeep = false
   } = {}
