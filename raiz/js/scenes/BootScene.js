@@ -33,6 +33,13 @@ export default class BootScene extends Phaser.Scene {
     } catch (_) {
       this.gameData = {}
     }
+    // Define título da página dinamicamente
+    try {
+      if (typeof document !== 'undefined') {
+        const titulo = this.gameData?.ui?.titulo || 'Jogo'
+        document.title = titulo
+      }
+    } catch (_) { /* ignore */ }
     // Acessibilidade: alto contraste
     try {
       const alto = this.gameData?.acessibilidade?.altoContraste
