@@ -59,6 +59,16 @@ Ou acrescentar co‑autor no trailer se aplicável.
 | `js/scenes/QuizPhaseScene.js` (ajustes lint)                  | Remoção bloco vazio / catch minimalista                      | Mantida lógica original               |
 | `js/scenes/DragPhaseScene.js` (ajustes lint)                  | Padronização catch e prefixo de err não usado                | Sem warnings                          |
 | `js/systems/dragSystem.js` (ajustes lint)                     | Variável futura prefixada `_targetByName`                    | Evita warning no-unused-vars          |
+| `js/scenes/DragResultScene.js`                                | Nova cena intermediária pós-drag                            | Testado fluxo e transição             |
+| `js/systems/timer.js`                                         | Componente reutilizável de timer                            | Validado contagem e stop              |
+| `js/systems/validation.js`                                    | Centralização de validações drag/quiz + cores               | Confirmado sem regressão              |
+| `js/systems/dragSystem.js` (refactor validação)               | Uso de `validation.js` para pontuação                       | Score consistente após refactor       |
+| `js/systems/quizSystem.js` (refactor validação)               | Substituição lógica interna por helpers                     | Acurácia preservada                   |
+| `js/scenes/BootScene.js` (título/ícone dinâmicos)             | Definição dinâmica de `document.title` + favicon            | Fallback seguro                       |
+| `raiz/index.html`                                             | Remoção favicon estático (dinamismo)                        | Sem impacto em carregamento           |
+| `assets/sfx/*` registro áudio                                 | Preload de chaves (success, wrong, ui_start, countdown)     | Ignora ausentes sem erro              |
+| `README.md` (atualizações recentes)                           | Documentação de timer, áudio, validações, cena extra        | Sincronizado com código               |
+| Remoção do Prettier                                           | Simplificação toolchain                                     | Conferido ausência de conflitos       |
 
 ## 5. Fluxo de Revisão
 
@@ -136,4 +146,4 @@ Verificar que exemplos de perguntas são originais ou suficientemente genéricos
 
 ---
 
-Última atualização: 2025-09-03 – migração para ESLint Flat Config, adição de scripts lint, limpeza de warnings nas cenas e sistemas.
+Última atualização: 2025-09-03 – adicionados timer reutilizável, cena DragResult, áudio (success/wrong/ui_start/timer), validações centralizadas, título & favicon dinâmicos e remoção do Prettier.
