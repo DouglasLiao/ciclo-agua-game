@@ -21,8 +21,6 @@ export default class DragPhaseScene extends Phaser.Scene {
     }
   }
 
-  
-
   create() {
     // Se gameData não chegou (ex: cena iniciada diretamente ou perda de estado), recarrega.
     if (!this.gameData) {

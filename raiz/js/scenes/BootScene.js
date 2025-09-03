@@ -33,7 +33,7 @@ export default class BootScene extends Phaser.Scene {
       }
     } catch (_) { /* alto contraste falhou */ }
     // Removido decodeAudio manual: Phaser já decodifica automaticamente quando necessário.
-  // Áudio opcional carregado (debug log removido em produção)
+    // Áudio opcional carregado
   this.scene.start('MenuScene', { gameData: this.gameData, dataset });
   }
 }
