@@ -3,7 +3,7 @@
 // - targets: [{ name, rect }]
 // - blocks:  [{ label, rect }]
 // - map: { [blockLabel]: targetNameCorreto }
-// callbacks: { onScoreChange(score), onAllPlaced(state) }
+// callbacks: { onScoreChange(score, state, meta), onAllPlaced(state) }
 // Retorna objeto de estado com blocks enriquecidos.
 export function createDragSystem(scene, { targets, blocks, map }, { onScoreChange, onAllPlaced } = {}) {
   const state = {
@@ -106,8 +106,8 @@ export function createDragSystem(scene, { targets, blocks, map }, { onScoreChang
         blk.target = overlap.name;
         // Apenas borda verde (sem alterar fill existente)
         gameObject.setStrokeStyle(4, corBordaAcerto, 1);
-        state.score += 1;
-        if (onScoreChange) onScoreChange(state.score, state);
+  state.score += 1;
+  if (onScoreChange) onScoreChange(state.score, state, { correct: true });
         // Desativa interação futura
         gameObject.disableInteractive();
         // Check all placed
@@ -117,12 +117,13 @@ export function createDragSystem(scene, { targets, blocks, map }, { onScoreChang
         return;
       }
     }
-    // Caso incorreto ou sem alvo: shake simples + retorno à origem + borda vermelha temporária
+  // Caso incorreto ou sem alvo: shake simples + retorno à origem + borda vermelha temporária
     const origin = blk.originalPos;
     const originalX = gameObject.x;
     const shakeAmp = 12;
     // aplica borda vermelha mais grossa
     gameObject.setStrokeStyle(4, corBordaErro, 1);
+  if (onScoreChange) onScoreChange(state.score, state, { correct: false, error: true });
     scene.tweens.add({
       targets: gameObject,
       x: originalX + shakeAmp,

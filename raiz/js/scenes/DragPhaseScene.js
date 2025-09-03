@@ -34,10 +34,12 @@ export default class DragPhaseScene extends Phaser.Scene {
         });
       return; // evita continuar sem dados
     }
-  // HUD
+  // HUD / Score
   this.score = 0;
   const dragTitle = getPath(this.gameData, 'ui.mensagens.faseDrag', 'Fase de Arrastar');
   this.add.text(20, 48, dragTitle, { fontSize: '20px', color: '#4ec2f0' });
+  const scoreLabel = getPath(this.gameData, 'ui.mensagens.pontuacao', 'Pontuação');
+
 
     // Área de alvos (4 alvos nomeados)
     // Layout: linha superior centralizada
@@ -54,6 +56,8 @@ export default class DragPhaseScene extends Phaser.Scene {
 
     // Blocos de origem (4 blocos com texto) na parte inferior
   const blockLabels = getArray(this.gameData, 'drag.blocks');
+  // Score text (mostra total conhecido)
+  this.scoreText = this.add.text(20, 20, `${scoreLabel}: 0/${blockLabels.length}` , { fontSize: '18px', color: '#ffffff' });
     const yBlocks = 420;
     this.blocks = blockLabels.map((label, i) => {
       const x = startX + i * gapX;
@@ -70,6 +74,13 @@ export default class DragPhaseScene extends Phaser.Scene {
       this,
       { targets: this.targets, blocks: this.blocks, map: mapping },
       {
+        onScoreChange: (score, state, meta) => {
+          // Atualiza HUD; meta.correct boolean (pode ser ignorado por enquanto)
+          this.scoreText.setText(`${scoreLabel}: ${score}/${state.total}`);
+          if (meta && meta.error) {
+            // (Opcional) pequeno flash poderia ser adicionado aqui
+          }
+        },
         onAllPlaced: (state) => {
           // Pequeno feedback visual antes da transição
           const msg = getPath(this.gameData, 'ui.mensagens.todosColocados', 'Todos posicionados! Avançando...');
