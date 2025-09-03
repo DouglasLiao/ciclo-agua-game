@@ -1,6 +1,7 @@
 import { createDragSystem } from '../systems/dragSystem.js'
 import { getPath, getArray } from '../systems/ui.js'
 import { loadGameData } from '../systems/dataLoader.js'
+import { createCountdown } from '../systems/timer.js'
 
 export default class DragPhaseScene extends Phaser.Scene {
   constructor() {
@@ -91,25 +92,49 @@ export default class DragPhaseScene extends Phaser.Scene {
     // Mapeamento correto (exemplo) label->target
     const mapping = getPath(this.gameData, 'drag.map', {})
 
+    // ========= Temporizador componentizado =========
+    const tempoLabel = getPath(this.gameData, 'ui.mensagens.tempo', 'Tempo')
+    const tempoSegundos = getPath(this.gameData, 'drag.tempoSegundos', 60)
+
+    // Finalização única (reutilizada pelo timer e pelo onAllPlaced)
+    this._ended = false
+    const finalize = (reason) => {
+      if (this._ended) return
+      this._ended = true
+      if (this.countdown) this.countdown.stop(reason)
+      if (this.dragState?.blocks) {
+        this.dragState.blocks.forEach((b) => !b.placed && b.rect.disableInteractive())
+      }
+      const state = this.dragState || { score: 0, total: this.blocks.length }
+      this.scene.start('DragResultScene', {
+        dragAcertos: state.score,
+        dragTotal: state.total,
+        gameData: this.gameData,
+        motivoFim: reason || 'concluido'
+      })
+    }
+
+    this.countdown = createCountdown(this, {
+      seconds: tempoSegundos,
+      x: 760,
+      y: 20,
+      label: tempoLabel,
+      warnThreshold: 10,
+      onExpire: () => finalize('tempo-esgotado')
+    })
+
     // Sistema de drag
     this.dragState = createDragSystem(
       this,
       { targets: this.targets, blocks: this.blocks, map: mapping },
       {
         onScoreChange: (score, state, meta) => {
-          // Atualiza HUD; meta.correct boolean (pode ser ignorado por enquanto)
           this.scoreText.setText(`${scoreLabel}: ${score}/${state.total}`)
           if (meta && meta.error) {
-            // (Opcional) pequeno flash poderia ser adicionado aqui
+            // (Opcional) feedback de erro
           }
         },
-        onAllPlaced: (state) => {
-          this.scene.start('DragResultScene', {
-            dragAcertos: state.score,
-            dragTotal: state.total,
-            gameData: this.gameData
-          })
-        }
+  onAllPlaced: (_state) => finalize('todos-colocados')
       }
     )
   }
