@@ -53,6 +53,12 @@ Ou acrescentar co‑autor no trailer se aplicável.
 | `js/scenes/DragPhaseScene.js` (HUD score reativada) | Inserção callback + texto dinâmico | Verificado atualização em acerto/erro |
 | `js/systems/dragSystem.js` (onScoreChange meta) | Propagação meta `{ correct, error }` | Confirmado não afeta lógica principal |
 | `js/systems/quizSystem.js` (shuffle perguntas + alternativas) | Embaralhamento Fisher-Yates | Validado preservação índice correto |
+| `eslint.config.js` | Criação de configuração Flat ESLint | Revisado: escopos, globals e plugins |
+| `package.json` (scripts lint/lint:fix) | Adição de scripts e deps ESLint | Confirmado versões e execução limpa |
+| `js/scenes/MenuScene.js` (ajustes lint) | Remoção comentário global redundante + rename variáveis erro | Zero warnings após lint |
+| `js/scenes/QuizPhaseScene.js` (ajustes lint) | Remoção bloco vazio / catch minimalista | Mantida lógica original |
+| `js/scenes/DragPhaseScene.js` (ajustes lint) | Padronização catch e prefixo de err não usado | Sem warnings |
+| `js/systems/dragSystem.js` (ajustes lint) | Variável futura prefixada `_targetByName` | Evita warning no-unused-vars |
 
 ## 5. Fluxo de Revisão
 
@@ -129,4 +135,4 @@ Manter somente sugestões compatíveis com MIT; evitar copiar trechos externos n
 Verificar que exemplos de perguntas são originais ou suficientemente genéricos.
 
 ---
-Última atualização: 2025-09-03 – adicionados registros de HUD de pontuação no drag e embaralhamento de perguntas/alternativas do quiz.
+Última atualização: 2025-09-03 – migração para ESLint Flat Config, adição de scripts lint, limpeza de warnings nas cenas e sistemas.
