@@ -1,22 +1,50 @@
 import { createDragSystem } from '../systems/dragSystem.js';
-import { getUI, getArray } from '../systems/ui.js';
+import { getPath, getArray } from '../systems/ui.js';
+import { loadGameData } from '../systems/dataLoader.js';
 
 export default class DragPhaseScene extends Phaser.Scene {
   constructor() { super('DragPhaseScene'); }
 
   init(data) {
     this.gameData = data?.gameData || null;
+    this.dataset = data?.dataset || null;
+    // Fallback: tenta inferir dataset via query se não veio.
+    if (!this.dataset) {
+      try {
+        if (typeof window !== 'undefined') {
+          const qs = new URLSearchParams(window.location.search);
+          this.dataset = qs.get('data') || qs.get('jogo') || 'jogo.json';
+        }
+      } catch (_) {
+        this.dataset = 'jogo.json';
+      }
+    }
   }
 
+  
+
   create() {
+    // Se gameData não chegou (ex: cena iniciada diretamente ou perda de estado), recarrega.
+    if (!this.gameData) {
+      this.add.text(20, 20, 'Carregando dados...', { fontSize: '18px', color: '#ffffff' });
+      loadGameData(this.dataset || 'jogo.json')
+        .then(data => {
+          this.scene.restart({ gameData: data, dataset: this.dataset });
+        })
+        .catch(err => {
+          console.error('[DragPhaseScene] Falha ao carregar dataset em fallback', err);
+          this.add.text(20, 50, 'Erro ao carregar dados', { fontSize: '16px', color: '#ff5555' });
+        });
+      return; // evita continuar sem dados
+    }
   // HUD
   this.score = 0;
-  const dragTitle = getUI(this.gameData, 'drag.title', 'Fase de Arrastar');
+  const dragTitle = getPath(this.gameData, 'ui.mensagens.faseDrag', 'Fase de Arrastar');
   this.add.text(20, 48, dragTitle, { fontSize: '20px', color: '#4ec2f0' });
 
     // Área de alvos (4 alvos nomeados)
     // Layout: linha superior centralizada
-  const targetNames = getArray(this.gameData, 'drag.targets', ['Evaporação', 'Condensação', 'Precipitação', 'Infiltração']);
+  const targetNames = getArray(this.gameData, 'drag.targets');
     const startX = 120;
     const gapX = 200;
     const yTargets = 140;
@@ -28,7 +56,7 @@ export default class DragPhaseScene extends Phaser.Scene {
     });
 
     // Blocos de origem (4 blocos com texto) na parte inferior
-  const blockLabels = getArray(this.gameData, 'drag.blocks', ['Água do solo', 'Nuvem', 'Chuva', 'Lago']);
+  const blockLabels = getArray(this.gameData, 'drag.blocks');
     const yBlocks = 420;
     this.blocks = blockLabels.map((label, i) => {
       const x = startX + i * gapX;
@@ -38,12 +66,7 @@ export default class DragPhaseScene extends Phaser.Scene {
     });
 
     // Mapeamento correto (exemplo) label->target
-    const mapping = getUI(this.gameData, 'drag.mapping', {
-      'Água do solo': 'Infiltração',
-      'Nuvem': 'Condensação',
-      'Chuva': 'Precipitação',
-      'Lago': 'Evaporação'
-    });
+  const mapping = getPath(this.gameData, 'drag.map', {});
 
     // Sistema de drag
     this.dragState = createDragSystem(
@@ -52,7 +75,7 @@ export default class DragPhaseScene extends Phaser.Scene {
       {
         onAllPlaced: (state) => {
           // Pequeno feedback visual antes da transição
-          const msg = getUI(this.gameData, 'drag.allPlacedMessage', 'Todos posicionados! Avançando...');
+          const msg = getPath(this.gameData, 'ui.mensagens.todosColocados', 'Todos posicionados! Avançando...');
           this.add.text(20, 80, msg, { fontSize: '18px', color: '#ffffff' });
           this.time.delayedCall(1000, () => {
             this.scene.start('QuizPhaseScene', { dragAcertos: state.score, dragTotal: state.total, gameData: this.gameData });

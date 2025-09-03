@@ -1,4 +1,4 @@
-import { loadGameData } from '../systems/dataLoader.js';
+import { loadGameData, resolveDatasetName } from '../systems/dataLoader.js';
 
 export default class BootScene extends Phaser.Scene {
   constructor() {
@@ -21,10 +21,19 @@ export default class BootScene extends Phaser.Scene {
   }
 
   async create() {
+    // Detecta dataset via query (?data=arquivo.json ou ?jogo=arquivo.json)
+  let dataset = resolveDatasetName('jogo.json');
     try {
-      this.gameData = await loadGameData('jogo.json');
+      if (typeof window !== 'undefined') {
+        const qs = new URLSearchParams(window.location.search);
+        dataset = qs.get('data') || qs.get('jogo') || dataset;
+      }
+    } catch (e) { /* ignore */ }
+    this.datasetFile = dataset;
+    try {
+      this.gameData = await loadGameData(dataset);
     } catch (e) {
-      console.error('[BootScene] Falha ao carregar jogo.json', e);
+      console.error('[BootScene] Falha ao carregar', dataset, e);
       this.gameData = {};
     }
     // Acessibilidade: alto contraste
@@ -40,6 +49,6 @@ export default class BootScene extends Phaser.Scene {
     if (this.sound && this.cache.audio.exists('quiz_complete')) {
       console.debug('[BootScene] Áudio quiz_complete carregado (decodificação automática)');
     }
-    this.scene.start('MenuScene', { gameData: this.gameData });
+  this.scene.start('MenuScene', { gameData: this.gameData, dataset });
   }
 }

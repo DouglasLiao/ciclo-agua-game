@@ -27,18 +27,33 @@ export function computeScoreDrag(acertosDrag, totalDrag, pesoDrag = 50) {
 }
 
 // startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange, debug })
-// pergunta: { text, options: [a,b,c,d], correct }
+// Aceita formato interno { text, options, correct } ou JSON { texto, alternativas, correta }.
 export function startQuiz(scene, perguntas, { onAnswer, onFinish, onScoreChange, debug = false } = {}) {
-  // Copiar e opcionalmente embaralhar alternativas preservando índice correto.
+  if (!Array.isArray(perguntas) || !perguntas.length) {
+    console.error('[quizSystem] Nenhuma pergunta disponível.');
+    if (onFinish) onFinish({ acertos: 0 }, { perguntas: [], respostas: [], concluido: true });
+    return { perguntas: [], respostas: [], concluido: true };
+  }
+  const normalizadas = perguntas.map((p, i) => {
+    const text = p.text !== undefined ? p.text : (p.texto !== undefined ? p.texto : `Pergunta ${i + 1}`);
+    const options = Array.isArray(p.options) ? p.options : (Array.isArray(p.alternativas) ? p.alternativas : []);
+    let correct = (p.correct !== undefined ? p.correct : p.correta);
+    if (!Array.isArray(options) || options.length < 2) {
+      console.warn('[quizSystem] Alternativas insuficientes em índice', i);
+    }
+    if (typeof correct !== 'number' || correct < 0 || correct >= options.length) {
+      console.warn('[quizSystem] Índice correto inválido em', i, 'ajustando para 0');
+      correct = 0;
+    }
+    return { text, options, correct };
+  });
   let shuffledPerguntas;
   if (debug) {
-    shuffledPerguntas = perguntas.map(p => ({ ...p }));
-    // Log em modo debug para confirmar não embaralhado
+    shuffledPerguntas = normalizadas.map(p => ({ ...p }));
     console.debug('[quizSystem] Debug ON: perguntas não embaralhadas');
   } else {
-    shuffledPerguntas = perguntas.map(orig => {
+    shuffledPerguntas = normalizadas.map(orig => {
       const optionsWithIndex = orig.options.map((opt, idx) => ({ opt, originalIndex: idx }));
-      // Fisher-Yates
       for (let i = optionsWithIndex.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [optionsWithIndex[i], optionsWithIndex[j]] = [optionsWithIndex[j], optionsWithIndex[i]];

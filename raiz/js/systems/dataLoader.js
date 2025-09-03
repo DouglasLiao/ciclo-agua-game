@@ -1,26 +1,47 @@
-// dataLoader com cache simples em nível de módulo.
-let _cachedData = null;
-let _loadingPromise = null;
+// dataLoader com cache por URL e suporte a dataset dinâmico via env / query.
+const _cache = new Map(); // url -> data
+const _loadingPromises = new Map(); // url -> promise
 let _schemaLogEnabled = true; // pode ser desativado em testes
 
-/**
- * Carrega e retorna dados principais do jogo.
- * - Faz fetch apenas uma vez (cache em memória).
- * - Retorna somente { ui, pontuacao, acessibilidade, drag, quiz }.
- * @param {string} url caminho do JSON (default 'jogo.json')
- */
-export async function loadGameData(url = 'jogo.json') {
-  if (_cachedData) return _cachedData;
-  if (_loadingPromise) return _loadingPromise;
+// Resolve dataset a partir de várias fontes (ordem de precedência controlada externamente).
+export function resolveDatasetName(fallback = 'jogo.json') {
+  try {
+    if (typeof globalThis !== 'undefined') {
+      if (globalThis.__DATASET__) return String(globalThis.__DATASET__);
+      if (globalThis.GAME_DATASET) return String(globalThis.GAME_DATASET);
+    }
+  } catch (_) { /* noop */ }
+  try {
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.GAME_DATASET) return String(process.env.GAME_DATASET);
+      if (process.env.VITE_DATASET) return String(process.env.VITE_DATASET);
+    }
+  } catch (_) { /* noop */ }
+  try {
+    if (import.meta && import.meta.env && import.meta.env.VITE_DATASET) {
+      return String(import.meta.env.VITE_DATASET);
+    }
+  } catch (_) { /* noop */ }
+  return fallback;
+}
 
-  _loadingPromise = (async () => {
+/**
+ * Carrega e retorna dados principais do jogo (cache por URL).
+ * @param {string} url caminho do JSON (se omitido, tenta resolver via env / fallback)
+ */
+export async function loadGameData(url) {
+  const key = url || resolveDatasetName('jogo.json');
+  if (_cache.has(key)) return _cache.get(key);
+  if (_loadingPromises.has(key)) return _loadingPromises.get(key);
+
+  const p = (async () => {
     let full;
     try {
-      const res = await fetch(url, { cache: 'no-cache' });
+      const res = await fetch(key, { cache: 'no-cache' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       full = await res.json();
     } catch (netErr) {
-      console.error('[dataLoader] Erro de rede ao buscar', url, netErr);
+      console.error('[dataLoader] Erro de rede ao buscar', key, netErr);
       full = mockGameData(); // fallback mínimo
     }
     let filtered;
@@ -30,19 +51,24 @@ export async function loadGameData(url = 'jogo.json') {
       console.error('[dataLoader] Erro de schema. Usando mock mínimo.', schemaErr);
       filtered = validateAndFilter(mockGameData());
     }
-    _cachedData = filtered;
+    _cache.set(key, filtered);
     return filtered;
-  })().finally(() => { _loadingPromise = null; });
-
-  return _loadingPromise;
+  })().finally(() => { _loadingPromises.delete(key); });
+  _loadingPromises.set(key, p);
+  return p;
 }
 
 /**
  * Invalida o cache em memória (útil em hot-reload ou testes).
  */
-export function invalidateGameDataCache() {
-  _cachedData = null;
-  _loadingPromise = null;
+export function invalidateGameDataCache(url) {
+  if (!url) {
+    _cache.clear();
+    _loadingPromises.clear();
+  } else {
+    _cache.delete(url);
+    _loadingPromises.delete(url);
+  }
 }
 
 // ---- Validação de schema ----

@@ -1,28 +1,23 @@
 import { startQuiz, computeScoreQuiz, computeScoreDrag } from '../systems/quizSystem.js';
-import { getUI, getArray } from '../systems/ui.js';
+import { getPath, getArray } from '../systems/ui.js';
 
 export default class QuizPhaseScene extends Phaser.Scene {
   constructor() { super('QuizPhaseScene'); }
 
   init(data) {
+  console.log(data)
   this.dragAcertos = data.dragAcertos || 0;
   this.dragTotal = data.dragTotal || 0;
     this.gameData = data.gameData || null;
   }
 
   create() {
-  const quizTitle = getUI(this.gameData, 'quiz.title', 'Fase de Quiz');
+  const quizTitle = getPath(this.gameData, 'ui.mensagens.faseQuiz', 'Fase de Quiz');
   this.add.text(20, 20, quizTitle, { fontSize: '20px', color: '#ffffff' });
 
-    const perguntasDemo = getArray(this.gameData, 'quiz.questions', [
-      { text: 'Processo em que a água retorna à atmosfera em forma de vapor.', options: ['Infiltração', 'Evaporação', 'Condensação', 'Precipitação'], correct: 1 },
-      { text: 'Formação de nuvens a partir do vapor de água.', options: ['Condensação', 'Transpiração', 'Infiltração', 'Evaporação'], correct: 0 },
-      { text: 'Queda de água para a superfície em forma de chuva.', options: ['Precipitação', 'Condensação', 'Evaporação', 'Sublimação'], correct: 0 }
-    ]);
+  const perguntasDemo = getArray(this.gameData, 'quiz.perguntas');
 
     startQuiz(this, perguntasDemo, {
-      onScoreChange: ({ acertos }) => {
-      },
       onFinish: (res) => {
         const pesos = this.gameData?.pontuacao || { pesoDrag: 50, pesoQuiz: 50 };
         const dragScore = computeScoreDrag(this.dragAcertos, this.dragTotal, pesos.pesoDrag);
