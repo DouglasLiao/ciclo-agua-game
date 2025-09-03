@@ -1,7 +1,7 @@
 // Flat config ESLint
-import js from '@eslint/js';
-import importPlugin from 'eslint-plugin-import';
-import jestPlugin from 'eslint-plugin-jest';
+import js from '@eslint/js'
+import importPlugin from 'eslint-plugin-import'
+import jestPlugin from 'eslint-plugin-jest'
 
 export default [
   { ignores: ['node_modules/**','coverage/**','raiz/assets/**','assets/**','dist/**','build/**'] },
@@ -28,7 +28,9 @@ export default [
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       'no-console': 'off',
       'import/no-unresolved': 'error',
-      'jest/expect-expect': 'off'
+      'jest/expect-expect': 'off',
+      'semi': ['error', 'never'],
+      'no-extra-semi': 'error'
     }
   },
   {
@@ -45,4 +47,4 @@ export default [
       // poderia adicionar regras específicas de teste aqui
     }
   }
-];
+]

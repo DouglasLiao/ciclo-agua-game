@@ -4,4 +4,4 @@ export default {
   moduleFileExtensions: ['js', 'mjs'],
   transform: {},
   verbose: true
-};
+}

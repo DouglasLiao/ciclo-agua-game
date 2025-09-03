@@ -1,6 +1,6 @@
-import { _validateGameDataForTests, setSchemaValidationLogging } from '../js/systems/dataLoader.js';
+import { _validateGameDataForTests, setSchemaValidationLogging } from '../js/systems/dataLoader.js'
 
-setSchemaValidationLogging(false);
+setSchemaValidationLogging(false)
 
 // Gera base comum ajustável
 function makeData({ uiTitulo, targets, blocks, map, descricoes, perguntas, pesos = { drag: 50, quiz: 50 }, altoContraste = false, cores }) {
@@ -10,7 +10,7 @@ function makeData({ uiTitulo, targets, blocks, map, descricoes, perguntas, pesos
     acessibilidade: { altoContraste },
     drag: { targets, blocks, map, descricoes, ...(cores ? { cores } : {}) },
     quiz: { perguntas }
-  };
+  }
 }
 
 const temas = [
@@ -94,7 +94,7 @@ const temas = [
       cores: { acerto: '#228833' }
     })
   }
-];
+]
 
 // Tema com mapeamento incompleto (válido sob regras atuais)
 const temaIncompletoMap = makeData({
@@ -104,25 +104,25 @@ const temaIncompletoMap = makeData({
   map: { b1: 'A', b2: 'B' }, // b3 sem entrada
   descricoes: { A: 'a', B: 'b', C: 'c' },
   perguntas: [ { texto: 'Pergunta', alternativas: ['x', 'y'], correta: 0 } ]
-});
+})
 
 
 describe('validação com múltiplos temas', () => {
   test.each(temas.map(t => [t.nome, t.data]))('aceita tema: %s', (_nome, data) => {
-    const filtered = _validateGameDataForTests(data);
-    expect(filtered.ui.titulo).toBe(data.ui.titulo);
-    expect(filtered.drag.targets.length).toBeGreaterThan(0);
-    expect(filtered.quiz.perguntas.length).toBe(data.quiz.perguntas.length);
-  });
+    const filtered = _validateGameDataForTests(data)
+    expect(filtered.ui.titulo).toBe(data.ui.titulo)
+    expect(filtered.drag.targets.length).toBeGreaterThan(0)
+    expect(filtered.quiz.perguntas.length).toBe(data.quiz.perguntas.length)
+  })
 
   test('aceita map parcial (não é exigido map completo)', () => {
-    const filtered = _validateGameDataForTests(temaIncompletoMap);
-    expect(filtered.drag.blocks.length).toBe(3);
-  });
+    const filtered = _validateGameDataForTests(temaIncompletoMap)
+    expect(filtered.drag.blocks.length).toBe(3)
+  })
 
   test('falha se alterar índice correta fora do range em tema existente', () => {
-    const broken = JSON.parse(JSON.stringify(temas[0].data));
-    broken.quiz.perguntas[0].correta = 99;
-    expect(() => _validateGameDataForTests(broken)).toThrow(/fora do intervalo/);
-  });
-});
+    const broken = JSON.parse(JSON.stringify(temas[0].data))
+    broken.quiz.perguntas[0].correta = 99
+    expect(() => _validateGameDataForTests(broken)).toThrow(/fora do intervalo/)
+  })
+})
