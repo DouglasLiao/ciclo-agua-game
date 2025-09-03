@@ -141,10 +141,9 @@ export function startQuiz(
   function updateFocusVisual() {
     if (state.locked || state.concluido) return // não alterar após resposta
     buttons.forEach((b, i) => {
+      b.setStyle({ backgroundColor: focusColors.default })
       if (i === state.focusIndex) {
         b.setStyle({ backgroundColor: focusColors.focus })
-      } else {
-        b.setStyle({ backgroundColor: focusColors.default })
       }
     })
   }
@@ -187,7 +186,7 @@ export function startQuiz(
       })
       tweens.push(tw)
     })
-    state.focusIndex = 0
+    state.focusIndex = -1
     updateFocusVisual()
   }
 
