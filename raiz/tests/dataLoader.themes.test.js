@@ -1,4 +1,5 @@
-import { _validateGameDataForTests, setSchemaValidationLogging } from '../js/systems/dataLoader.js'
+import { setSchemaValidationLogging } from '../js/systems/dataLoader.js'
+import { _validateGameDataForTests } from '../js/systems/schemaValidation.js'
 
 setSchemaValidationLogging(false)
 
