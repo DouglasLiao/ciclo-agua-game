@@ -1,0 +1,40 @@
+module.exports = {
+  root: true,
+  env: {
+    browser: true,
+    es2022: true,
+    node: true,
+    jest: true
+  },
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module'
+  },
+  plugins: ['import','jest'],
+  extends: [
+    'eslint:recommended',
+    'plugin:import/recommended',
+    'plugin:jest/recommended'
+  ],
+  settings: {
+    'import/resolver': {
+      node: {
+        extensions: ['.js']
+      }
+    }
+  },
+  rules: {
+    'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+    'no-console': 'off',
+    'import/no-unresolved': 'error',
+    'jest/expect-expect': 'off'
+  },
+  overrides: [
+    {
+      files: ['raiz/js/**/*.js'],
+      globals: {
+        Phaser: 'readonly'
+      }
+    }
+  ]
+};
