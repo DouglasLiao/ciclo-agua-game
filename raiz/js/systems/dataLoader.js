@@ -1,6 +1,7 @@
 // dataLoader com cache simples em nível de módulo.
 let _cachedData = null;
 let _loadingPromise = null;
+let _schemaLogEnabled = true; // pode ser desativado em testes
 
 /**
  * Carrega e retorna dados principais do jogo.
@@ -47,7 +48,7 @@ export function invalidateGameDataCache() {
 // ---- Validação de schema ----
 function validateAndFilter(full) {
   const errors = [];
-  const logErr = (msg) => { errors.push(msg); console.error('[dataLoader] Schema', msg); };
+  const logErr = (msg) => { errors.push(msg); if (_schemaLogEnabled) console.error('[dataLoader] Schema', msg); };
 
   const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
   if (!isObj(full)) logErr('Objeto raiz inválido (esperado objeto)');
@@ -104,6 +105,16 @@ function validateAndFilter(full) {
     drag,
     quiz
   };
+}
+
+// Export interno apenas para testes unitários (não usar em produção de jogo diretamente)
+export function _validateGameDataForTests(obj) {
+  return validateAndFilter(obj);
+}
+
+// Permite silenciar logs de schema em testes unitários
+export function setSchemaValidationLogging(enabled) {
+  _schemaLogEnabled = !!enabled;
 }
 
 // Mock mínimo usado em fallback de rede/erro de schema
